@@ -2,9 +2,10 @@ package repositoryRegisterImpl
 
 import (
 	"database/sql"
+	employeDomain "employeeSelfService/domain/employee"
+	userDomain "employeeSelfService/domain/user"
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
-	registerRequest "employeeSelfService/request/register"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -18,19 +19,11 @@ func NewRepositoryRegisterImpl(client *gorm.DB) RepositoryRegisterImpl {
 	return RepositoryRegisterImpl{client}
 }
 
-func (repo RepositoryRegisterImpl) Register(registerRequest *registerRequest.RegisterRequest) *errs.AppErr {
+func (repo RepositoryRegisterImpl) Register(user *userDomain.User, employee *employeDomain.Employee) *errs.AppErr {
 	// begin transaction
 	tx := repo.db.Begin()
 
-	// convert user
-	user := registerRequest.ToUser()
-	user.UserRole = "employee"
-	user.StatusVerified = "true"
-
-	//convert employee
-	employee := registerRequest.ToEmployee()
-
-	// // save data employee
+	// save data employee
 	if result := tx.Create(user); result.Error != nil {
 		// if error rollback
 		tx.Rollback()

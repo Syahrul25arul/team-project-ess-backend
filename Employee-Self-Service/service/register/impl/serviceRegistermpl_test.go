@@ -1,12 +1,12 @@
-package repositoryRegisterImpl
+package serviceRegisterImpl
 
 import (
 	"employeeSelfService/config"
 	"employeeSelfService/database"
-	domainEmployee "employeeSelfService/domain/employee"
-	domainUser "employeeSelfService/domain/user"
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
+	repositoryRegister "employeeSelfService/repository/register/impl"
+	registerRequest "employeeSelfService/request/register"
 	"reflect"
 	"testing"
 
@@ -19,42 +19,39 @@ func SetupTest() {
 	config.SanityCheck()
 }
 
-func GetRepository() (*gorm.DB, RepositoryRegisterImpl) {
+func GetService() (*gorm.DB, ServiceRegisterImpl) {
 	db := database.GetClientDb()
-	return db, NewRepositoryRegisterImpl(db)
+	registerRepository := repositoryRegister.NewRepositoryRegisterImpl(db)
+	return db, NewCustomerService(registerRepository)
 }
 
-func TestNewRepositoryRegisterImpl(t *testing.T) {
+func TestNewCustomerService(t *testing.T) {
+	// setup test
 	SetupTest()
-	_, getRepository := GetRepository()
+	_, service := GetService()
 
-	reflection := reflect.TypeOf(getRepository)
+	reflection := reflect.TypeOf(service)
 
 	assert.NotNil(t, reflection.Name())
-	assert.Equal(t, reflection.Name(), "RepositoryRegisterImpl")
+	assert.Equal(t, reflection.Name(), "ServiceRegisterImpl")
 }
 
-func TestRepositoryRegisterImpl_Register(t *testing.T) {
-	// setup
+func TestServiceRegisterImpl_Register(t *testing.T) {
+	// setup test
 	SetupTest()
-	db, repository := GetRepository()
+	db, service := GetService()
 	helper.TruncateTable(db, []string{"employee", "users"})
 
 	testCase := []struct {
 		name     string
-		want1    *domainUser.User
-		want2    *domainEmployee.Employee
+		want     *registerRequest.RegisterRequest
 		expected *errs.AppErr
 	}{
 		{
 			name: "Register success",
-			want1: &domainUser.User{
-				Email:          "test@gmail.com",
-				Password:       "29385789sdljkgndsjkh",
-				StatusVerified: "true",
-				UserRole:       "employee",
-			},
-			want2: &domainEmployee.Employee{
+			want: &registerRequest.RegisterRequest{
+				Email:                     "test@gmail.com",
+				Password:                  "29385789sdljkgndsjkh",
 				NamaLengkap:               "Teddy",
 				TempatLahir:               "Jakarta",
 				TanggalLahir:              "13-09-1992",
@@ -75,7 +72,7 @@ func TestRepositoryRegisterImpl_Register(t *testing.T) {
 	}
 	for _, testTable := range testCase {
 		t.Run(testTable.name, func(t *testing.T) {
-			result := repository.Register(testTable.want1, testTable.want2)
+			result := service.Register(testTable.want)
 			assert.Equal(t, testTable.expected, result)
 		})
 	}
