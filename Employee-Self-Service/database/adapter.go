@@ -16,6 +16,7 @@ func GetClientDb() *gorm.DB {
 	db_dbname := config.DB_NAME
 	db_port := config.DB_PORT
 
+	fmt.Println("Host", db_host)
 	// check if app run testing
 	if config.TESTING == "true" {
 		db_dbname = config.DB_NAME_TESTING

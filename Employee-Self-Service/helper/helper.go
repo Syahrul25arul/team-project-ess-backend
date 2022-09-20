@@ -8,6 +8,7 @@ import (
 	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func BcryptPassword(passwordSalt string) string {
@@ -39,4 +40,11 @@ func ClearDoubleCode(str string) string {
 		return s
 	})
 	return str
+}
+
+func TruncateTable(db *gorm.DB, table []string) {
+	for _, t := range table {
+		db.Exec(fmt.Sprintf("TRUNCATE TABLE %s restart identity cascade", t))
+	}
+	fmt.Println("====== TRUNCATE SUCCESS =======")
 }

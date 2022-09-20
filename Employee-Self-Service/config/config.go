@@ -4,6 +4,8 @@ import (
 	"employeeSelfService/logger"
 	"fmt"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 var SERVER_ADDRESS string
@@ -46,4 +48,10 @@ func SanityCheck() {
 	TESTING = os.Getenv("TESTING")
 	DB_NAME_TESTING = os.Getenv("DB_NAME_TESTING")
 	SECRET_KEY = os.Getenv("SECRET_KEY")
+}
+
+func SetupEnv(direktoryEnv string) {
+	if err := godotenv.Load(direktoryEnv); err != nil {
+		logger.Fatal("error loading file .env variable " + err.Error())
+	}
 }
