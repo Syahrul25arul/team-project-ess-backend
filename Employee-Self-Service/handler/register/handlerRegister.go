@@ -1,16 +1,25 @@
 package registerHandler
 
 import (
+	repositoryRegisterImpl "employeeSelfService/repository/register/impl"
 	registerRequest "employeeSelfService/request/register"
 	responseRegister "employeeSelfService/response/register"
 	serviceRegister "employeeSelfService/service/register"
+	serviceRegisterImpl "employeeSelfService/service/register/impl"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type HandlerRegister struct {
 	service serviceRegister.ServiceRegister
+}
+
+func NewHandlerRegister(db *gorm.DB) HandlerRegister {
+	registerRepository := repositoryRegisterImpl.NewRepositoryRegisterImpl(db)
+	registerService := serviceRegisterImpl.NewCustomerService(registerRepository)
+	return HandlerRegister{&registerService}
 }
 
 func (h HandlerRegister) RegisterHandler(ctx *gin.Context) {

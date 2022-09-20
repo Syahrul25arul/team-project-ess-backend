@@ -1,16 +1,25 @@
 package app
 
+import (
+	"employeeSelfService/config"
+	"employeeSelfService/database"
+	handlerRegister "employeeSelfService/handler/register"
+	"employeeSelfService/logger"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
 func Start() {
-	// // loading env variabel
-	// if err := godotenv.Load(); err != nil {
-	// 	logger.Fatal("error loading file .env variable " + err.Error())
-	// }
+	// loading env variabel
+	config.SetupEnv("../.env")
 
-	// // check all variables are loaded
-	// config.SanityCheck()
-	// dbClient := database.GetClientDb()
+	// check all variables are loaded
+	config.SanityCheck()
+	dbClient := database.GetClientDb()
 
-	// // prepare handler customer
+	// prepare handler register
+	registerHandler := handlerRegister.NewHandlerRegister(dbClient)
 	// customerRepository := repostiory.NewCustomerRepository(dbClient)
 	// customerService := service.NewCustomerService(customerRepository)
 	// customerHandler := CustomerHandler{customerService}
@@ -31,11 +40,11 @@ func Start() {
 	// // setup dummy product
 	// productRepo.SetupProductDummy()
 
-	// r := gin.Default()
+	r := gin.Default()
 
 	// // productRoute := r.Group("/products")
 	// // productRoute.Use(middleware.AuthMiddleware)
-	// r.POST("/register", customerHandler.RegisterCustomerHandler)
+	r.POST("/register", registerHandler.RegisterHandler)
 	// r.POST("/login", authHandler.LoginHandler)
 
 	// r.POST("/products", middleware.IsAdminMiddleware(), productHandler.SaveProductHandler)
@@ -44,10 +53,10 @@ func Start() {
 	// r.GET("/products/:productId", middleware.AuthMiddleware(), productHandler.GetProdutById)
 	// r.PUT("/products/:productId", middleware.IsAdminMiddleware(), productHandler.UpdateProductHandler)
 
-	// // give info where server and port app running
-	// logger.Info(fmt.Sprintf("start server on  %s:%s ...", config.SERVER_ADDRESS, config.SERVER_PORT))
+	// give info where server and port app running
+	logger.Info(fmt.Sprintf("start server on  %s:%s ...", config.SERVER_ADDRESS, config.SERVER_PORT))
 
-	// // run server
-	// r.Run(fmt.Sprintf("%s:%s", config.SERVER_ADDRESS, config.SERVER_PORT))
+	// run server
+	r.Run(fmt.Sprintf("%s:%s", config.SERVER_ADDRESS, config.SERVER_PORT))
 
 }
