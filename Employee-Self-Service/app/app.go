@@ -12,7 +12,7 @@ import (
 
 func Start() {
 	// loading env variabel
-	config.SetupEnv("../.env")
+	config.SetupEnv(".env")
 
 	// check all variables are loaded
 	config.SanityCheck()
