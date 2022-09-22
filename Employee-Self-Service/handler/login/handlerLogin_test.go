@@ -39,7 +39,14 @@ func SetupDataForAuth(db *gorm.DB) {
 		UserRole:       "employee",
 		StatusVerified: "true",
 	}
+	userAdmin := &domainUser.User{
+		Email:          "admin@gmail.com",
+		Password:       helper.BcryptPassword(config.SECRET_KEY + "password"),
+		UserRole:       "admin",
+		StatusVerified: "true",
+	}
 	tx.Create(userTest)
+	tx.Create(userAdmin)
 
 	// create employee
 	employeeTest := &domainEmployee.Employee{

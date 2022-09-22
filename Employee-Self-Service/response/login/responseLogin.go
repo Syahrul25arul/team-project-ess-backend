@@ -14,5 +14,6 @@ func NewLoginSucess(token string) *ResponseLogin {
 		Token:   token,
 		Message: "Your Login Success",
 		Code:    http.StatusOK,
+		Status:  "ok",
 	}
 }

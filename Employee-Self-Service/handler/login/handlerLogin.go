@@ -16,7 +16,7 @@ type HandlerLogin struct {
 	service serviceLogin.ServiceLogin
 }
 
-func NewHandlerRegister(db *gorm.DB) HandlerLogin {
+func NewHandlerLogin(db *gorm.DB) HandlerLogin {
 	repo := repositoryAuth.NewRepositoryAuthImpl(db)
 	loginService := serviceLoginImpl.NewLoginService(repo)
 	return HandlerLogin{&loginService}

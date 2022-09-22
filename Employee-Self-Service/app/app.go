@@ -3,6 +3,7 @@ package app
 import (
 	"employeeSelfService/config"
 	"employeeSelfService/database"
+	handlerLogin "employeeSelfService/handler/login"
 	handlerRegister "employeeSelfService/handler/register"
 	"employeeSelfService/logger"
 	"fmt"
@@ -18,8 +19,10 @@ func Start() {
 	config.SanityCheck()
 	dbClient := database.GetClientDb()
 
-	// prepare handler register
+	// prepare handler
 	registerHandler := handlerRegister.NewHandlerRegister(dbClient)
+	loginHandler := handlerLogin.NewHandlerLogin(dbClient)
+
 	// customerRepository := repostiory.NewCustomerRepository(dbClient)
 	// customerService := service.NewCustomerService(customerRepository)
 	// customerHandler := CustomerHandler{customerService}
@@ -45,6 +48,7 @@ func Start() {
 	// // productRoute := r.Group("/products")
 	// // productRoute.Use(middleware.AuthMiddleware)
 	r.POST("/register", registerHandler.RegisterHandler)
+	r.POST("/login", loginHandler.LoginHandler)
 	// r.POST("/login", authHandler.LoginHandler)
 
 	// r.POST("/products", middleware.IsAdminMiddleware(), productHandler.SaveProductHandler)
