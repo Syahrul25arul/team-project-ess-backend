@@ -49,7 +49,7 @@ func (s *ServiceLoginImpl) Login(loginRequest *loginRequest.LoginRequest) (*resp
 	if accessToken, appErr := authToken.NewAccessToken(); appErr != nil {
 		return nil, appErr
 	} else {
-		fmt.Println("====== new access token ========")
+		fmt.Println("====== new access token ========", accessToken)
 		return responseLogin.NewLoginSucess(accessToken), nil
 	}
 }
