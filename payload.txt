@@ -1,0 +1,8 @@
+user payload
+- user_id
+- email
+- user_role
+- employee_id
+- nama_lengkap
+- id_position
+- position_name

@@ -5,6 +5,6 @@ import (
 	"employeeSelfService/errs"
 )
 
-type RepositoryUse interface {
+type RepositoryUser interface {
 	FindByEmail(email string) (*domainUser.User, *errs.AppErr)
 }
