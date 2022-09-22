@@ -17,3 +17,11 @@ func NewLoginSucess(token string) *ResponseLogin {
 		Status:  "ok",
 	}
 }
+
+func NewLoginFailed(code int, message string) *ResponseLogin {
+	return &ResponseLogin{
+		Code:    code,
+		Message: message,
+		Status:  "error",
+	}
+}

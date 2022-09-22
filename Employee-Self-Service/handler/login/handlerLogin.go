@@ -3,6 +3,7 @@ package loginHandler
 import (
 	repositoryAuth "employeeSelfService/repository/auth/impl"
 	loginRequest "employeeSelfService/request/login"
+	loginResponse "employeeSelfService/response/login"
 	serviceLogin "employeeSelfService/service/login"
 	serviceLoginImpl "employeeSelfService/service/login/impl"
 	"fmt"
@@ -31,7 +32,7 @@ func (h HandlerLogin) LoginHandler(ctx *gin.Context) {
 
 	if response, err := h.service.Login(login); err != nil {
 		// jika terjdi error tampilkan error
-		ctx.JSON(err.Code, err.Message)
+		ctx.JSON(err.Code, loginResponse.NewLoginFailed(err.Code, err.Message))
 	} else {
 		// jika tidak error, berikan response ke client
 		ctx.JSON(http.StatusOK, response)
