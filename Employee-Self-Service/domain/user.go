@@ -1,4 +1,4 @@
-package userDomain
+package domain
 
 type User struct {
 	IdUser         int64  `gorm:"primaryKey"`

@@ -5,13 +5,12 @@ import (
 	"database/sql"
 	"employeeSelfService/config"
 	"employeeSelfService/database"
-	domainEmployee "employeeSelfService/domain/employee"
-	domainUser "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
 	reposiotryAuthImpl "employeeSelfService/repository/auth/impl"
-	loginRequest "employeeSelfService/request/login"
-	loginResponse "employeeSelfService/response/login"
+	"employeeSelfService/request"
+	"employeeSelfService/response"
 	serviceLoginImpl "employeeSelfService/service/login/impl"
 	"encoding/json"
 	"fmt"
@@ -33,13 +32,13 @@ func SetupDataForAuth(db *gorm.DB) {
 	tx := db.Begin()
 
 	// create user
-	userTest := &domainUser.User{
+	userTest := &domain.User{
 		Email:          "test@gmail.com",
 		Password:       helper.BcryptPassword(config.SECRET_KEY + "password"),
 		UserRole:       "employee",
 		StatusVerified: "true",
 	}
-	userAdmin := &domainUser.User{
+	userAdmin := &domain.User{
 		Email:          "admin@gmail.com",
 		Password:       helper.BcryptPassword(config.SECRET_KEY + "password"),
 		UserRole:       "admin",
@@ -49,7 +48,7 @@ func SetupDataForAuth(db *gorm.DB) {
 	tx.Create(userAdmin)
 
 	// create employee
-	employeeTest := &domainEmployee.Employee{
+	employeeTest := &domain.Employee{
 		NamaLengkap:               "Teddy",
 		TempatLahir:               "Jakarta",
 		TanggalLahir:              "13-09-1992",
@@ -94,14 +93,14 @@ func TestHandlerLogin_LoginHandler(t *testing.T) {
 
 	testCase := []struct {
 		name      string
-		want      *loginRequest.LoginRequest
-		expected1 *loginResponse.ResponseLogin
+		want      *request.LoginRequest
+		expected1 *response.ResponseLogin
 		expected2 *errs.AppErr
 	}{
 		{
 			name:      "auth login success",
-			want:      &loginRequest.LoginRequest{Email: "test@gmail.com", Password: "password"},
-			expected1: &loginResponse.ResponseLogin{Message: "Your Login Success", Code: http.StatusOK},
+			want:      &request.LoginRequest{Email: "test@gmail.com", Password: "password"},
+			expected1: &response.ResponseLogin{Message: "Your Login Success", Code: http.StatusOK},
 			expected2: nil,
 		},
 	}
@@ -119,7 +118,7 @@ func TestHandlerLogin_LoginHandler(t *testing.T) {
 
 			if w.Code == http.StatusOK {
 				// get response body from handler
-				var response *loginResponse.ResponseLogin
+				var response *response.ResponseLogin
 				body := w.Body.String()
 				json.Unmarshal([]byte(body), &response)
 

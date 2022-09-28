@@ -1,11 +1,10 @@
 package repositoryRegister
 
 import (
-	employeDomain "employeeSelfService/domain/employee"
-	userDomain "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 )
 
 type RepositoryInterface interface {
-	Register(user *userDomain.User, employee *employeDomain.Employee) *errs.AppErr
+	Register(user *domain.User, employee *domain.Employee) *errs.AppErr
 }

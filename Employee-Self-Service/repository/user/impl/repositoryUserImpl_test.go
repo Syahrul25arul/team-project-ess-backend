@@ -3,7 +3,7 @@ package repositoryUserImpl
 import (
 	"employeeSelfService/config"
 	"employeeSelfService/database"
-	domainUser "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
 	"reflect"
@@ -38,7 +38,7 @@ func TestRepositoryUserImpl_FindByEmail(t *testing.T) {
 	SetupTest()
 	db, repository := GetRepository()
 	helper.TruncateTable(db, []string{"employee", "users"})
-	userTest := &domainUser.User{
+	userTest := &domain.User{
 		Email:          "test@gmail.com",
 		Password:       "29385789sdljkgndsjkh",
 		UserRole:       "employee",
@@ -50,7 +50,7 @@ func TestRepositoryUserImpl_FindByEmail(t *testing.T) {
 		name      string
 		want      string
 		expected  *errs.AppErr
-		expected2 *domainUser.User
+		expected2 *domain.User
 	}{
 		{
 			name:      "Register success",

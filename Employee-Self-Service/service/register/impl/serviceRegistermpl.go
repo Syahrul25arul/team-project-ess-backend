@@ -5,7 +5,7 @@ import (
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
 	repositoryRegister "employeeSelfService/repository/register"
-	registerRequest "employeeSelfService/request/register"
+	"employeeSelfService/request"
 )
 
 type ServiceRegisterImpl struct {
@@ -16,7 +16,7 @@ func NewCustomerService(repo repositoryRegister.RepositoryInterface) ServiceRegi
 	return ServiceRegisterImpl{repo}
 }
 
-func (s *ServiceRegisterImpl) Register(registerRequest *registerRequest.RegisterRequest) *errs.AppErr {
+func (s *ServiceRegisterImpl) Register(registerRequest *request.RegisterRequest) *errs.AppErr {
 	// convert registerRequest to user
 	user := registerRequest.ToUser()
 	user.StatusVerified = "true"

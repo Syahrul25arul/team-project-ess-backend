@@ -2,8 +2,7 @@ package repositoryRegisterImpl
 
 import (
 	"database/sql"
-	employeDomain "employeeSelfService/domain/employee"
-	userDomain "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
 	"fmt"
@@ -19,7 +18,7 @@ func NewRepositoryRegisterImpl(client *gorm.DB) RepositoryRegisterImpl {
 	return RepositoryRegisterImpl{client}
 }
 
-func (repo RepositoryRegisterImpl) Register(user *userDomain.User, employee *employeDomain.Employee) *errs.AppErr {
+func (repo RepositoryRegisterImpl) Register(user *domain.User, employee *domain.Employee) *errs.AppErr {
 	// begin transaction
 	tx := repo.db.Begin()
 

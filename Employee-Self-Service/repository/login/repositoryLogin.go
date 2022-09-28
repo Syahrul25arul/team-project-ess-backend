@@ -1,10 +1,10 @@
 package repositorylogin
 
 import (
-	domainUser "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 )
 
 type RepositoryLogin interface {
-	Login(user *domainUser.User) *errs.AppErr
+	Login(user *domain.User) *errs.AppErr
 }

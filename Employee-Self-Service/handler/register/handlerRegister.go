@@ -2,8 +2,8 @@ package registerHandler
 
 import (
 	repositoryRegisterImpl "employeeSelfService/repository/register/impl"
-	registerRequest "employeeSelfService/request/register"
-	responseRegister "employeeSelfService/response/register"
+	"employeeSelfService/request"
+	"employeeSelfService/response"
 	serviceRegister "employeeSelfService/service/register"
 	serviceRegisterImpl "employeeSelfService/service/register/impl"
 	"net/http"
@@ -24,7 +24,7 @@ func NewHandlerRegister(db *gorm.DB) HandlerRegister {
 
 func (h HandlerRegister) RegisterHandler(ctx *gin.Context) {
 	// tangkap request body dari client
-	var register *registerRequest.RegisterRequest
+	var register *request.RegisterRequest
 	ctx.ShouldBindJSON(&register)
 
 	if err := h.service.Register(register); err != nil {
@@ -32,7 +32,7 @@ func (h HandlerRegister) RegisterHandler(ctx *gin.Context) {
 		ctx.JSON(err.Code, err.Message)
 	} else {
 		// response success
-		response := responseRegister.NewReponseRegisterSuccess()
+		response := response.NewReponseRegisterSuccess()
 		// jika tidak error, berikan response ke client
 		ctx.JSON(http.StatusCreated, response)
 	}

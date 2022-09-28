@@ -3,8 +3,7 @@ package repositoryRegisterImpl
 import (
 	"employeeSelfService/config"
 	"employeeSelfService/database"
-	domainEmployee "employeeSelfService/domain/employee"
-	domainUser "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
 	"reflect"
@@ -42,19 +41,19 @@ func TestRepositoryRegisterImpl_Register(t *testing.T) {
 
 	testCase := []struct {
 		name     string
-		want1    *domainUser.User
-		want2    *domainEmployee.Employee
+		want1    *domain.User
+		want2    *domain.Employee
 		expected *errs.AppErr
 	}{
 		{
 			name: "Register success",
-			want1: &domainUser.User{
+			want1: &domain.User{
 				Email:          "test@gmail.com",
 				Password:       "29385789sdljkgndsjkh",
 				StatusVerified: "true",
 				UserRole:       "employee",
 			},
-			want2: &domainEmployee.Employee{
+			want2: &domain.Employee{
 				NamaLengkap:               "Teddy",
 				TempatLahir:               "Jakarta",
 				TanggalLahir:              "13-09-1992",

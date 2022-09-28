@@ -1,7 +1,7 @@
 package repositoryUserImpl
 
 import (
-	domainUser "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
 
@@ -16,8 +16,8 @@ func NewRepositoryUserImpl(client *gorm.DB) RepositoryUserImpl {
 	return RepositoryUserImpl{client}
 }
 
-func (repo RepositoryUserImpl) FindByEmail(email string) (*domainUser.User, *errs.AppErr) {
-	var user domainUser.User
+func (repo RepositoryUserImpl) FindByEmail(email string) (*domain.User, *errs.AppErr) {
+	var user domain.User
 	if result := repo.db.Where("email = ?", email).Find(&user); result.RowsAffected == 0 {
 		logger.Error("error get data user by email not found")
 		return nil, errs.NewAuthenticationError("Your Login Failed! Invalid Credential")

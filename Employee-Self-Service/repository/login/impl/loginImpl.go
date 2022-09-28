@@ -1,7 +1,7 @@
 package loginImpl
 
 import (
-	domainUser "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 
 	"gorm.io/gorm"
@@ -15,6 +15,6 @@ func NewRepositoryLoginImpl(client *gorm.DB) RepositoryLoginImpl {
 	return RepositoryLoginImpl{client}
 }
 
-func (repo RepositoryLoginImpl) Login(user *domainUser.User) *errs.AppErr {
+func (repo RepositoryLoginImpl) Login(user *domain.User) *errs.AppErr {
 	return nil
 }

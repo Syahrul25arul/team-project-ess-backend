@@ -1,8 +1,7 @@
-package registerRequest
+package request
 
 import (
-	domainEmployee "employeeSelfService/domain/employee"
-	domainUser "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
 )
 
 type RegisterRequest struct {
@@ -24,15 +23,15 @@ type RegisterRequest struct {
 	PhotoEmployee             string `json:"photo_employee"`
 }
 
-func (u RegisterRequest) ToUser() *domainUser.User {
-	return &domainUser.User{
+func (u RegisterRequest) ToUser() *domain.User {
+	return &domain.User{
 		Email:    u.Email,
 		Password: u.Password,
 	}
 }
 
-func (u RegisterRequest) ToEmployee() *domainEmployee.Employee {
-	return &domainEmployee.Employee{
+func (u RegisterRequest) ToEmployee() *domain.Employee {
+	return &domain.Employee{
 		Nik:                       u.Nik,
 		NamaLengkap:               u.NamaLengkap,
 		TempatLahir:               u.TempatLahir,

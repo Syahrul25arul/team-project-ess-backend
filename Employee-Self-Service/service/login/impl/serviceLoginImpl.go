@@ -2,12 +2,12 @@ package serviceLoginImpl
 
 import (
 	"employeeSelfService/config"
-	domainAuth "employeeSelfService/domain/auth"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
 	repositoryAuth "employeeSelfService/repository/auth"
-	loginRequest "employeeSelfService/request/login"
-	responseLogin "employeeSelfService/response/login"
+	"employeeSelfService/request"
+	"employeeSelfService/response"
 	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
@@ -21,10 +21,10 @@ func NewLoginService(repo repositoryAuth.RepositoryAuth) ServiceLoginImpl {
 	return ServiceLoginImpl{repo}
 }
 
-func (s *ServiceLoginImpl) Login(loginRequest *loginRequest.LoginRequest) (*responseLogin.ResponseLogin, *errs.AppErr) {
+func (s *ServiceLoginImpl) Login(loginRequest *request.LoginRequest) (*response.ResponseLogin, *errs.AppErr) {
 	// siapkan struct user dan error
 	var err *errs.AppErr
-	var auth *domainAuth.Auth
+	var auth *domain.Auth
 
 	// ambil data user by username dari request
 	// jika tidak ketemu, kembalikan error
@@ -42,7 +42,7 @@ func (s *ServiceLoginImpl) Login(loginRequest *loginRequest.LoginRequest) (*resp
 	// create claims token
 
 	claims := auth.ClaimsAccessToken()
-	authToken := domainAuth.NewAuthToken(claims)
+	authToken := domain.NewAuthToken(claims)
 
 	fmt.Println("======= New Auth Token ========", authToken)
 
@@ -50,6 +50,6 @@ func (s *ServiceLoginImpl) Login(loginRequest *loginRequest.LoginRequest) (*resp
 		return nil, appErr
 	} else {
 		fmt.Println("====== new access token ========", accessToken)
-		return responseLogin.NewLoginSucess(accessToken), nil
+		return response.NewLoginSucess(accessToken), nil
 	}
 }

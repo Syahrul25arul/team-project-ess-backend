@@ -1,10 +1,10 @@
 package repositoryAuth
 
 import (
-	domainAuth "employeeSelfService/domain/auth"
+	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 )
 
 type RepositoryAuth interface {
-	FindByEmail(email string) (*domainAuth.Auth, *errs.AppErr)
+	FindByEmail(email string) (*domain.Auth, *errs.AppErr)
 }

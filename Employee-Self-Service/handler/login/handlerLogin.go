@@ -2,8 +2,8 @@ package loginHandler
 
 import (
 	repositoryAuth "employeeSelfService/repository/auth/impl"
-	loginRequest "employeeSelfService/request/login"
-	loginResponse "employeeSelfService/response/login"
+	"employeeSelfService/request"
+	"employeeSelfService/response"
 	serviceLogin "employeeSelfService/service/login"
 	serviceLoginImpl "employeeSelfService/service/login/impl"
 	"fmt"
@@ -25,16 +25,16 @@ func NewHandlerLogin(db *gorm.DB) HandlerLogin {
 
 func (h HandlerLogin) LoginHandler(ctx *gin.Context) {
 	// tangkap request dari login
-	var login *loginRequest.LoginRequest
+	var login *request.LoginRequest
 	ctx.ShouldBindJSON(&login)
 
 	fmt.Println("==== login request====", login)
 
-	if response, err := h.service.Login(login); err != nil {
+	if resp, err := h.service.Login(login); err != nil {
 		// jika terjdi error tampilkan error
-		ctx.JSON(err.Code, loginResponse.NewLoginFailed(err.Code, err.Message))
+		ctx.JSON(err.Code, response.NewLoginFailed(err.Code, err.Message))
 	} else {
 		// jika tidak error, berikan response ke client
-		ctx.JSON(http.StatusOK, response)
+		ctx.JSON(http.StatusOK, resp)
 	}
 }

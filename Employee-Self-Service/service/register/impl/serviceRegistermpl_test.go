@@ -6,7 +6,7 @@ import (
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
 	repositoryRegister "employeeSelfService/repository/register/impl"
-	registerRequest "employeeSelfService/request/register"
+	"employeeSelfService/request"
 	"reflect"
 	"testing"
 
@@ -44,12 +44,12 @@ func TestServiceRegisterImpl_Register(t *testing.T) {
 
 	testCase := []struct {
 		name     string
-		want     *registerRequest.RegisterRequest
+		want     *request.RegisterRequest
 		expected *errs.AppErr
 	}{
 		{
 			name: "Register success",
-			want: &registerRequest.RegisterRequest{
+			want: &request.RegisterRequest{
 				Email:                     "test@gmail.com",
 				Password:                  "29385789sdljkgndsjkh",
 				NamaLengkap:               "Teddy",

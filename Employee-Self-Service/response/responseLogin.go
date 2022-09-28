@@ -1,4 +1,4 @@
-package responseLogin
+package response
 
 import "net/http"
 

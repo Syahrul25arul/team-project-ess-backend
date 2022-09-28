@@ -6,7 +6,7 @@ import (
 	"employeeSelfService/database"
 	"employeeSelfService/helper"
 	repositoryRegisterImpl "employeeSelfService/repository/register/impl"
-	requestRegister "employeeSelfService/request/register"
+	"employeeSelfService/request"
 	serviceRegisterImpl "employeeSelfService/service/register/impl"
 	"encoding/json"
 	"net/http"
@@ -44,14 +44,14 @@ func TestHandlerRegister_RegisterHandler(t *testing.T) {
 
 	tests := []struct {
 		name            string
-		request         *requestRegister.RegisterRequest
+		request         *request.RegisterRequest
 		expectedCode    int
 		expectedMessage string
 	}{
 		// TODO: Add test cases.
 		{
 			name: "register handler save data user and employee",
-			request: &requestRegister.RegisterRequest{
+			request: &request.RegisterRequest{
 				Email:                     "test@gmail.com",
 				Password:                  "29385789sdljkgndsjkh",
 				NamaLengkap:               "Teddy",

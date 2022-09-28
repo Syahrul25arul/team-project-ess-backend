@@ -1,4 +1,4 @@
-package domainEmployee
+package domain
 
 import (
 	"database/sql"

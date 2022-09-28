@@ -1,4 +1,4 @@
-package employee_position
+package domain
 
 type EmployeePosition struct {
 	IdEmployeePosition int64 `gorm:"primaryKey"`

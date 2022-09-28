@@ -2,9 +2,9 @@ package serviceRegister
 
 import (
 	"employeeSelfService/errs"
-	registerRequest "employeeSelfService/request/register"
+	"employeeSelfService/request"
 )
 
 type ServiceRegister interface {
-	Register(registerRequest *registerRequest.RegisterRequest) *errs.AppErr
+	Register(registerRequest *request.RegisterRequest) *errs.AppErr
 }

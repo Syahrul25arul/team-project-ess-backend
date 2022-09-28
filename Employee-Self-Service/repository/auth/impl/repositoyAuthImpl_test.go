@@ -4,11 +4,8 @@ import (
 	"database/sql"
 	"employeeSelfService/config"
 	"employeeSelfService/database"
-	domainAuth "employeeSelfService/domain/auth"
-	domainEmployee "employeeSelfService/domain/employee"
-	domainEmpoyeePosition "employeeSelfService/domain/employeePosition"
-	domainPosition "employeeSelfService/domain/position"
-	domainUser "employeeSelfService/domain/user"
+	"employeeSelfService/domain"
+
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
 	"reflect"
@@ -42,7 +39,7 @@ func SetupDataForAuth(db *gorm.DB) {
 	tx := db.Begin()
 
 	// create user
-	userTest := &domainUser.User{
+	userTest := &domain.User{
 		Email:          "test@gmail.com",
 		Password:       "29385789sdljkgndsjkh",
 		UserRole:       "employee",
@@ -51,7 +48,7 @@ func SetupDataForAuth(db *gorm.DB) {
 	tx.Create(userTest)
 
 	// create employee
-	employeeTest := &domainEmployee.Employee{
+	employeeTest := &domain.Employee{
 		NamaLengkap:               "Teddy",
 		TempatLahir:               "Jakarta",
 		TanggalLahir:              "13-09-1992",
@@ -71,13 +68,13 @@ func SetupDataForAuth(db *gorm.DB) {
 	tx.Create(employeeTest)
 
 	// create position
-	positionTest := &domainPosition.Position{
+	positionTest := &domain.Position{
 		PositionName: "HRD",
 	}
 	tx.Create(positionTest)
 
 	// create employeePosition
-	employeePositionTest := &domainEmpoyeePosition.EmployeePosition{
+	employeePositionTest := &domain.EmployeePosition{
 		IdPosition: positionTest.IdPosition,
 		IdEmploye:  employeeTest.IdEmploye,
 	}
@@ -99,13 +96,13 @@ func TestRepositoryAuthImpl_FindByEmail(t *testing.T) {
 		name      string
 		want      string
 		expected  *errs.AppErr
-		expected2 *domainAuth.Auth
+		expected2 *domain.Auth
 	}{
 		{
 			name:     "Register success",
 			want:     "test@gmail.com",
 			expected: nil,
-			expected2: &domainAuth.Auth{
+			expected2: &domain.Auth{
 				Email:       "test@gmail.com",
 				IdUser:      sql.NullInt64{Int64: int64(1), Valid: true},
 				IdEmploye:   sql.NullInt64{Int64: int64(1), Valid: true},

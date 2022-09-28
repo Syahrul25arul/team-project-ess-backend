@@ -1,4 +1,4 @@
-package domainPosition
+package domain
 
 type Position struct {
 	IdPosition   int64  `gorm:"primaryKey"`

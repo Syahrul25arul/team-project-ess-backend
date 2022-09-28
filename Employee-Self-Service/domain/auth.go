@@ -1,4 +1,4 @@
-package authDomain
+package domain
 
 import (
 	"database/sql"
