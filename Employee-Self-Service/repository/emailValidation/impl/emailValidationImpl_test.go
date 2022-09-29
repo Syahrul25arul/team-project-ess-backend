@@ -33,22 +33,11 @@ func TestNewRepositoryEmailValidationImpl(t *testing.T) {
 	assert.Equal(t, reflection.Name(), "RepositoryEmailValidationImpl")
 }
 
-func SetupDataForEmailValidation(db *gorm.DB) {
-	tx := db.Begin()
-	email1 := &domain.EmailValidation{NamaEmailValidation: "@celerates.co.id"}
-	email2 := &domain.EmailValidation{NamaEmailValidation: "@celerates.com"}
-
-	tx.Create(email1)
-	tx.Create(email2)
-	tx.Commit()
-
-}
-
 func TestRepositoryEmailValidationImpl_Save(t *testing.T) {
 	SetupTest()
 	db, repository := GetRepository()
 	helper.TruncateTable(db, []string{"email_validation"})
-	SetupDataForEmailValidation(db)
+	database.SetupDataEmailValidationDummy(db)
 
 	testCase := []struct {
 		name     string

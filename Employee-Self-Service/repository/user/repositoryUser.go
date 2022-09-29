@@ -7,4 +7,5 @@ import (
 
 type RepositoryUser interface {
 	FindByEmail(email string) (*domain.User, *errs.AppErr)
+	FindById(id int64) (*domain.User, *errs.AppErr)
 }

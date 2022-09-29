@@ -6,7 +6,9 @@ import (
 	"employeeSelfService/domain"
 	"employeeSelfService/helper"
 	repositoryEmailValidation "employeeSelfService/repository/emailValidation/impl"
+	repositoryUser "employeeSelfService/repository/user/impl"
 	"employeeSelfService/response"
+	"net/http"
 	"reflect"
 	"testing"
 
@@ -22,7 +24,8 @@ func SetupTest() {
 func GetService() (*gorm.DB, ServiceEmaiValidationImpl) {
 	db := database.GetClientDb()
 	repositiory := repositoryEmailValidation.NewRepositoryEmailValidationImpl(db)
-	return db, NewServiceEmailValidationImpl(repositiory)
+	repositioryUser := repositoryUser.NewRepositoryUserImpl(db)
+	return db, NewServiceEmailValidationImpl(repositiory, repositioryUser)
 }
 
 func TestNewServiceEmailValidationImpl(t *testing.T) {
@@ -36,43 +39,48 @@ func TestNewServiceEmailValidationImpl(t *testing.T) {
 	assert.Equal(t, reflection.Name(), "ServiceEmaiValidationImpl")
 }
 
-func SetupDataForEmailValidation(db *gorm.DB) {
-	tx := db.Begin()
-	email1 := &domain.EmailValidation{NamaEmailValidation: "@celerates.co.id"}
-	email2 := &domain.EmailValidation{NamaEmailValidation: "@celerates.com"}
-
-	tx.Create(email1)
-	tx.Create(email2)
-	tx.Commit()
-
-}
-
 func TestServiceEmaiValidationImpl_Save(t *testing.T) {
 	// setup test
 	SetupTest()
 	db, service := GetService()
-	helper.TruncateTable(db, []string{"email_validation"})
-	SetupDataForEmailValidation(db)
+	helper.TruncateTable(db, []string{"email_validation", "users"})
+	database.SetupDataEmailValidationDummy(db)
+	database.SetupDataUserDummy(db)
 
 	testCase := []struct {
 		name     string
-		want     *domain.EmailValidation
+		want1    *domain.EmailValidation
+		want2    int
 		expected response.ReponseEmailValidation
 	}{
 		{
 			name:     "Email Validation Success",
-			want:     &domain.EmailValidation{NamaEmailValidation: "@gmail.com"},
+			want1:    &domain.EmailValidation{NamaEmailValidation: "@gmail.com"},
+			want2:    1,
 			expected: response.NewResponseEmailValidationSuccess(),
 		},
 		{
-			name:     "Email Validation Failed",
-			want:     &domain.EmailValidation{NamaEmailValidation: "@celerates.co.id"},
-			expected: response.NewResponseEmailValidationFailed("email for @celerates.co.id exist"),
+			name:     "Email Validation Failed email exist",
+			want1:    &domain.EmailValidation{NamaEmailValidation: "@celerates.co.id"},
+			want2:    1,
+			expected: response.NewResponseEmailValidationFailed(http.StatusBadRequest, "email for @celerates.co.id exist"),
+		},
+		{
+			name:     "Email Validation Failed forbidden",
+			want1:    &domain.EmailValidation{NamaEmailValidation: "@tai.co.id"},
+			want2:    2,
+			expected: response.NewResponseEmailValidationFailed(http.StatusForbidden, "you dont have credential"),
+		},
+		{
+			name:     "Email Validation Failed user not foyund",
+			want1:    &domain.EmailValidation{NamaEmailValidation: "@tai.co.id"},
+			want2:    5,
+			expected: response.NewResponseEmailValidationFailed(http.StatusNotFound, "user not found"),
 		},
 	}
 	for _, testTable := range testCase {
 		t.Run(testTable.name, func(t *testing.T) {
-			result := service.Save(testTable.want)
+			result := service.Save(testTable.want1, int64(testTable.want2))
 			assert.Equal(t, testTable.expected, result)
 		})
 	}

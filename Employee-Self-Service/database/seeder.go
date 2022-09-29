@@ -195,3 +195,33 @@ func SetupDataDummy(db *gorm.DB) {
 
 	tx.Commit()
 }
+
+func SetupDataEmailValidationDummy(db *gorm.DB) {
+	tx := db.Begin()
+	email1 := &domain.EmailValidation{NamaEmailValidation: "@celerates.co.id"}
+	email2 := &domain.EmailValidation{NamaEmailValidation: "@celerates.com"}
+
+	tx.Create(email1)
+	tx.Create(email2)
+	tx.Commit()
+}
+
+func SetupDataUserDummy(db *gorm.DB) {
+	tx := db.Begin()
+	userTest := &domain.User{
+		Email:          "test@gmail.com",
+		Password:       "29385789sdljkgndsjkh",
+		UserRole:       "admin",
+		StatusVerified: "true",
+	}
+	userTest2 := &domain.User{
+		Email:          "test@gmailasfsa.com",
+		Password:       "29385789sdljkgndsjkh",
+		UserRole:       "employee",
+		StatusVerified: "true",
+	}
+
+	tx.Create(userTest)
+	tx.Create(userTest2)
+	tx.Commit()
+}

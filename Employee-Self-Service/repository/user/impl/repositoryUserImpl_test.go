@@ -67,3 +67,38 @@ func TestRepositoryUserImpl_FindByEmail(t *testing.T) {
 		})
 	}
 }
+
+func TestRepositoryUserImpl_FindById(t *testing.T) {
+	// setup
+	SetupTest()
+	db, repository := GetRepository()
+	helper.TruncateTable(db, []string{"employee", "users"})
+	userTest := &domain.User{
+		Email:          "test@gmail.com",
+		Password:       "29385789sdljkgndsjkh",
+		UserRole:       "employee",
+		StatusVerified: "true",
+	}
+	db.Create(userTest)
+
+	testCase := []struct {
+		name      string
+		want      int64
+		expected  *errs.AppErr
+		expected2 *domain.User
+	}{
+		{
+			name:      "Register success",
+			want:      int64(1),
+			expected:  nil,
+			expected2: userTest,
+		},
+	}
+	for _, testTable := range testCase {
+		t.Run(testTable.name, func(t *testing.T) {
+			user, errors := repository.FindById(testTable.want)
+			assert.Equal(t, testTable.expected, errors)
+			assert.Equal(t, testTable.expected2, user)
+		})
+	}
+}

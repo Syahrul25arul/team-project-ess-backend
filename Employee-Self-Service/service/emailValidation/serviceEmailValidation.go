@@ -6,5 +6,5 @@ import (
 )
 
 type ServiceEmailValidation interface {
-	Save(emailValidation *domain.EmailValidation) response.ReponseEmailValidation
+	Save(emailValidation *domain.EmailValidation, id int64) response.ReponseEmailValidation
 }

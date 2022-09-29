@@ -16,10 +16,10 @@ func NewResponseEmailValidationSuccess() ReponseEmailValidation {
 	}
 }
 
-func NewResponseEmailValidationFailed(message string) ReponseEmailValidation {
+func NewResponseEmailValidationFailed(code int, message string) ReponseEmailValidation {
 	return ReponseEmailValidation{
-		Code:    http.StatusCreated,
-		Status:  "ok",
+		Code:    code,
+		Status:  "error",
 		Message: message,
 	}
 }

@@ -25,3 +25,13 @@ func (repo RepositoryUserImpl) FindByEmail(email string) (*domain.User, *errs.Ap
 
 	return &user, nil
 }
+
+func (repo RepositoryUserImpl) FindById(id int64) (*domain.User, *errs.AppErr) {
+	// buat variable untuk menanpung data user dari database
+	var user *domain.User = &domain.User{IdUser: id}
+	if result := repo.db.First(user); result.RowsAffected == 0 {
+		logger.Error("error get data user by id not found")
+		return nil, errs.NewNotFoundError("user not found")
+	}
+	return user, nil
+}
