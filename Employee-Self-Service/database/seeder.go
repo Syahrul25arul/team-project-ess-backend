@@ -104,7 +104,7 @@ func SetupDataDummy(db *gorm.DB) {
 		IntervalKeterlambatan:      15,
 		BobotKeterlambatan:         0.25,
 		MaksimalBobotKeterlambatan: 1,
-		PicAbsensi:                 positionHR.IdPosition,
+		IdPosition:                 positionHR.IdPosition,
 		MinimalMasukJamKerja:       "08:00",
 		MaksimalMasukJamKerja:      "10:00",
 	}
@@ -224,4 +224,18 @@ func SetupDataUserDummy(db *gorm.DB) {
 	tx.Create(userTest)
 	tx.Create(userTest2)
 	tx.Commit()
+}
+
+func SetupDataAbsenConfiguration(db *gorm.DB) {
+	absenConfiguration := &domain.AbsenConfiguration{
+		DurasiJamKerja:             8,
+		IntervalKeterlambatan:      15,
+		BobotKeterlambatan:         0.25,
+		MaksimalBobotKeterlambatan: 1,
+		IdPosition:                 1,
+		MinimalMasukJamKerja:       "08:00",
+		MaksimalMasukJamKerja:      "10:00",
+	}
+
+	db.Create(absenConfiguration)
 }
