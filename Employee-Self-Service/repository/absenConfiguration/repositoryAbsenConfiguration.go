@@ -5,7 +5,7 @@ import (
 	"employeeSelfService/errs"
 )
 
-type RepositoiryAbsenConfiguration interface {
+type RepositoryAbsenConfiguration interface {
 	GetData() (*domain.AbsenConfiguration, *errs.AppErr)
 	Save(absenConfiguration *domain.AbsenConfiguration) *errs.AppErr
 }
