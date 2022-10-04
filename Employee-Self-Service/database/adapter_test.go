@@ -2,7 +2,6 @@ package database
 
 import (
 	"employeeSelfService/config"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,8 +13,5 @@ func TestGetClientDb(t *testing.T) {
 	config.SanityCheck()
 
 	db := GetClientDb()
-
-	fmt.Println(db)
-
 	assert.NotNil(t, db)
 }

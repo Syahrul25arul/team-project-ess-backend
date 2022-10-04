@@ -6,7 +6,6 @@ import (
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
 	"employeeSelfService/response"
-	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -40,7 +39,7 @@ func (repo RepositoryUserImpl) FindById(id int64) (*domain.User, *errs.AppErr) {
 	return user, nil
 }
 
-func (repo RepositoryUserImpl) GetDataDashboard(id string) (*response.ResponseDashboardFromDatabase, *errs.AppErr) {
+func (repo RepositoryUserImpl) GetDataDashboard(id string) (*response.ResponseDashboard, *errs.AppErr) {
 	// buat variabel untuk menapung data user dari database
 	var dashboard = response.ResponseDashboardFromDatabase{}
 	ctx := context.Background()
@@ -72,9 +71,6 @@ func (repo RepositoryUserImpl) GetDataDashboard(id string) (*response.ResponseDa
 	having e.id_employe = ` + id + ` 
 	limit 1 ;`
 
-	fmt.Println("============ Time ===============")
-	fmt.Println(time.Now())
-
 	rows, err := repo.db.ConnPool.QueryContext(ctx, script)
 
 	if err != nil {
@@ -93,5 +89,7 @@ func (repo RepositoryUserImpl) GetDataDashboard(id string) (*response.ResponseDa
 			return nil, errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!")
 		}
 	}
-	return &dashboard, nil
+
+	reponseDashboard := dashboard.ToResponseDashboard()
+	return &reponseDashboard, nil
 }

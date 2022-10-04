@@ -46,5 +46,4 @@ func TruncateTable(db *gorm.DB, table []string) {
 	for _, t := range table {
 		db.Exec(fmt.Sprintf("TRUNCATE TABLE %s restart identity cascade", t))
 	}
-	fmt.Println("====== TRUNCATE SUCCESS =======")
 }

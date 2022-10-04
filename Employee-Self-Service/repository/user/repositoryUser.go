@@ -9,5 +9,5 @@ import (
 type RepositoryUser interface {
 	FindByEmail(email string) (*domain.User, *errs.AppErr)
 	FindById(id int64) (*domain.User, *errs.AppErr)
-	GetDataDashboard(id string) (*response.ResponseDashboardFromDatabase, *errs.AppErr)
+	GetDataDashboard(id string) (*response.ResponseDashboard, *errs.AppErr)
 }

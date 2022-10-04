@@ -5,7 +5,6 @@ import (
 	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -32,7 +31,6 @@ func (repo RepositoryRegisterImpl) Register(user *domain.User, employee *domain.
 
 	// get id user in employee
 	employee.IdUser = sql.NullInt64{Int64: int64(user.IdUser), Valid: true}
-	fmt.Println("==== ID USER ====", employee.IdUser)
 
 	if result := tx.Create(employee); result.Error != nil {
 		// if error rollback

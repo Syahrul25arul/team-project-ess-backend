@@ -34,11 +34,7 @@ func (r ResponseDashboardFromDatabase) ToResponseDashboard() ResponseDashboard {
 		responseDashboard.PicAbsensi = true
 	}
 
-	if !r.IdeEmployeSecondary.Valid {
-		responseDashboard.IdeEmployeSecondary = false
-	} else {
-		responseDashboard.IdeEmployeSecondary = true
-	}
+	responseDashboard.IdeEmployeSecondary = r.IdeEmployeSecondary.Valid
 
 	if r.SudahAbsen == 0 {
 		responseDashboard.SudahAbsen = false
