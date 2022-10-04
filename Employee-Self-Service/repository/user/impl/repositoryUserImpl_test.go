@@ -1,11 +1,13 @@
 package repositoryUserImpl
 
 import (
+	"database/sql"
 	"employeeSelfService/config"
 	"employeeSelfService/database"
 	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
+	"employeeSelfService/response"
 	"reflect"
 	"testing"
 
@@ -97,6 +99,72 @@ func TestRepositoryUserImpl_FindById(t *testing.T) {
 	for _, testTable := range testCase {
 		t.Run(testTable.name, func(t *testing.T) {
 			user, errors := repository.FindById(testTable.want)
+			assert.Equal(t, testTable.expected, errors)
+			assert.Equal(t, testTable.expected2, user)
+		})
+	}
+}
+
+func TestRepositoryUserImpl_GetDataDashboard(t *testing.T) {
+	SetupTest()
+	db, repository := GetRepository()
+
+	helper.TruncateTable(db, []string{"employee", "users", "approval", "employee_position", "position", "absensi", "absen_configuration"})
+	database.SetupDataDummy(db)
+
+	testCase := []struct {
+		name      string
+		want      string
+		expected  *errs.AppErr
+		expected2 *response.ResponseDashboardFromDatabase
+	}{
+		{
+			name:     "get dashboard success employee no approval",
+			want:     "1",
+			expected: nil,
+			expected2: &response.ResponseDashboardFromDatabase{
+				IdEmploye:           int64(1),
+				PicAbsensi:          0,
+				IdeEmployeSecondary: sql.NullInt64{Int64: int64(0), Valid: false},
+				Kehadiran:           int32(2),
+				Approval:            int32(0),
+				SudahAbsen:          1,
+			},
+		},
+		{
+			name:     "get dashboard success employee with approval",
+			want:     "2",
+			expected: nil,
+			expected2: &response.ResponseDashboardFromDatabase{
+				IdEmploye:           int64(2),
+				PicAbsensi:          1,
+				IdeEmployeSecondary: sql.NullInt64{Int64: int64(0), Valid: false},
+				Kehadiran:           int32(0),
+				Approval:            int32(4),
+			},
+		},
+		{
+			name:     "get dashboard success employee with no data",
+			want:     "3",
+			expected: nil,
+			expected2: &response.ResponseDashboardFromDatabase{
+				IdEmploye:           int64(0),
+				PicAbsensi:          0,
+				IdeEmployeSecondary: sql.NullInt64{Int64: int64(0), Valid: false},
+				Kehadiran:           int32(0),
+				Approval:            int32(0),
+			},
+		},
+		{
+			name:      "get dashboard failed",
+			want:      "asdfadsfh",
+			expected:  errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!"),
+			expected2: nil,
+		},
+	}
+	for _, testTable := range testCase {
+		t.Run(testTable.name, func(t *testing.T) {
+			user, errors := repository.GetDataDashboard(testTable.want)
 			assert.Equal(t, testTable.expected, errors)
 			assert.Equal(t, testTable.expected2, user)
 		})
