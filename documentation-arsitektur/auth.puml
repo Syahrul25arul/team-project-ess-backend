@@ -1,0 +1,12 @@
+@startuml AuthLogin
+start 
+repeat : Page Login;
+    : input email, password;
+    : check db;
+repeat while (email exist and password true ?) is (no)
+->yes;
+ : get data employee;
+ : hashing with jwt;
+ : return response jwt token;
+stop
+@enduml
