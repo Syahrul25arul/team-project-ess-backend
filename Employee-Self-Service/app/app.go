@@ -9,6 +9,7 @@ import (
 	handlerLogin "employeeSelfService/handler/login"
 	handlerRegister "employeeSelfService/handler/register"
 	"employeeSelfService/logger"
+	"employeeSelfService/middleware"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -55,9 +56,17 @@ func Start() {
 	// // productRoute.Use(middleware.AuthMiddleware)
 	r.POST("/register", registerHandler.RegisterHandler)
 	r.POST("/login", loginHandler.LoginHandler)
-	r.POST("/konfigurasi/:user_id/email", emailValidationHandler.SaveEmailValidation)
-	r.POST("/konfigurasi/:user_id/kehadiran", absenConfigurationHandler.SaveAbsenConfiguration)
+
 	r.GET("/dashboard/:user_id", dashboardHandler.GetDashboardHandler)
+	isAdmin := r.Group("/konfigurasi")
+
+	// is admin route middleware
+	isAdmin.Use(middleware.IsAdmin(dbClient))
+	{
+		isAdmin.POST("/:user_id/email", emailValidationHandler.SaveEmailValidation)
+		isAdmin.POST("/:user_id/kehadiran", absenConfigurationHandler.SaveAbsenConfiguration)
+	}
+
 	// r.POST("/login", authHandler.LoginHandler)
 
 	// r.POST("/products", middleware.IsAdminMiddleware(), productHandler.SaveProductHandler)

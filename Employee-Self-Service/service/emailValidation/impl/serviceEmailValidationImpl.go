@@ -2,7 +2,6 @@ package serviceEmailValidationImpl
 
 import (
 	"employeeSelfService/domain"
-	"employeeSelfService/errs"
 	repositoryEmailValidation "employeeSelfService/repository/emailValidation"
 	repositoryUser "employeeSelfService/repository/user"
 	"employeeSelfService/response"
@@ -18,19 +17,6 @@ func NewServiceEmailValidationImpl(repo repositoryEmailValidation.RepositoryEmai
 }
 
 func (service ServiceEmaiValidationImpl) Save(emailValidation *domain.EmailValidation, id int64) response.ReponseEmailValidation {
-	// ambil data user client
-	user, err := service.user.FindById(id)
-
-	// cek apakah ada error
-	if err != nil {
-		newError := errs.NewNotFoundError(err.Message)
-		return response.NewResponseEmailValidationFailed(newError.Code, newError.Message)
-	}
-
-	if user.UserRole != "admin" {
-		newError := errs.NewForbiddenError("you dont have credential")
-		return response.NewResponseEmailValidationFailed(newError.Code, newError.Message)
-	}
 
 	// save email validation ke database
 	resp := service.repo.Save(emailValidation)
