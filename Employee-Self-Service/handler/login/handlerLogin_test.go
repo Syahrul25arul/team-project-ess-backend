@@ -13,7 +13,6 @@ import (
 	"employeeSelfService/response"
 	serviceLoginImpl "employeeSelfService/service/login/impl"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -113,8 +112,6 @@ func TestHandlerLogin_LoginHandler(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			r.ServeHTTP(w, req)
-
-			fmt.Println("=== status code ====", w.Code)
 
 			if w.Code == http.StatusOK {
 				// get response body from handler

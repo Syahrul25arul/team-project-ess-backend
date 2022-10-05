@@ -44,12 +44,9 @@ func (s *ServiceLoginImpl) Login(loginRequest *request.LoginRequest) (*response.
 	claims := auth.ClaimsAccessToken()
 	authToken := domain.NewAuthToken(claims)
 
-	fmt.Println("======= New Auth Token ========", authToken)
-
 	if accessToken, appErr := authToken.NewAccessToken(); appErr != nil {
 		return nil, appErr
 	} else {
-		fmt.Println("====== new access token ========", accessToken)
 		return response.NewLoginSucess(accessToken), nil
 	}
 }
