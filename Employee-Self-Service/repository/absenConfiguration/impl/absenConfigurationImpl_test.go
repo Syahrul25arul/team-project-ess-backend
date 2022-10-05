@@ -6,7 +6,6 @@ import (
 	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -98,7 +97,6 @@ func TestRepositoryAbsenConfigurationImpl_GetData(t *testing.T) {
 		MaksimalMasukJamKerja:      "10:00:00",
 	}
 
-	fmt.Println(result)
 	assert.Nil(t, err)
 	assert.Equal(t, expected, result)
 

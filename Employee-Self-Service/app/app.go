@@ -4,6 +4,7 @@ import (
 	"employeeSelfService/config"
 	"employeeSelfService/database"
 	handlerAbsenConfiguration "employeeSelfService/handler/absenConfiguration"
+	handlerDashboard "employeeSelfService/handler/dashboard"
 	handlerEmailValidation "employeeSelfService/handler/emailValidation"
 	handlerLogin "employeeSelfService/handler/login"
 	handlerRegister "employeeSelfService/handler/register"
@@ -26,6 +27,7 @@ func Start() {
 	loginHandler := handlerLogin.NewHandlerLogin(dbClient)
 	emailValidationHandler := handlerEmailValidation.NewHandlerEmailValidation(dbClient)
 	absenConfigurationHandler := handlerAbsenConfiguration.NewHandlerAbsenConfiguration(dbClient)
+	dashboardHandler := handlerDashboard.NewHandlerDashboard(dbClient)
 
 	// customerRepository := repostiory.NewCustomerRepository(dbClient)
 	// customerService := service.NewCustomerService(customerRepository)
@@ -55,6 +57,7 @@ func Start() {
 	r.POST("/login", loginHandler.LoginHandler)
 	r.POST("/konfigurasi/:user_id/email", emailValidationHandler.SaveEmailValidation)
 	r.POST("/konfigurasi/:user_id/kehadiran", absenConfigurationHandler.SaveAbsenConfiguration)
+	r.GET("/dashboard/:user_id", dashboardHandler.GetDashboardHandler)
 	// r.POST("/login", authHandler.LoginHandler)
 
 	// r.POST("/products", middleware.IsAdminMiddleware(), productHandler.SaveProductHandler)
