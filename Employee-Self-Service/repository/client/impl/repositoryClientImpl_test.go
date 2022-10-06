@@ -64,23 +64,50 @@ func Test_repositoryClientImpl_Save(t *testing.T) {
 }
 
 func Test_repositoryClientImpl_GetAll(t *testing.T) {
-	tests := []struct {
-		name  string
-		r     repositoryClientImpl
-		want  []domain.Client
-		want1 *errs.AppErr
+	SetupTest()
+	db, repository := GetRepository()
+	helper.TruncateTable(db, []string{"client"})
+	database.SetupDataClientDummy(db)
+
+	testCase := []struct {
+		name      string
+		expected1 []domain.Client
+		expected2 *errs.AppErr
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Get All Client Success",
+			expected1: []domain.Client{
+				{
+					IdClient:     1,
+					NamaClient:   "Indo Maret",
+					Lattitude:    -6.288405,
+					Longitude:    106.812327,
+					AlamatClient: "Jl. Al Maruf No.58, RT.10/RW.3, Cilandak Tim., Kec. Ps. Minggu, KOTA ADM, Daerah Khusus Ibukota Jakarta 12140",
+				},
+				{
+					IdClient:     2,
+					NamaClient:   "Blue Bird Group",
+					Lattitude:    -6.255734,
+					Longitude:    106.776826,
+					AlamatClient: "Jl. Mampang Prpt. Raya No.60, RT.9/RW.3, Tegal Parang, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12790",
+				},
+			},
+			expected2: nil,
+		},
+		{
+			name:      "Get All Client Failed",
+			expected1: []domain.Client{},
+			expected2: nil,
+		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := tt.r.GetAll()
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("repositoryClientImpl.GetAll() got = %v, want %v", got, tt.want)
+	for i, testTable := range testCase {
+		t.Run(testTable.name, func(t *testing.T) {
+			if i == 1 {
+				helper.TruncateTable(db, []string{"client"})
 			}
-			if !reflect.DeepEqual(got1, tt.want1) {
-				t.Errorf("repositoryClientImpl.GetAll() got1 = %v, want %v", got1, tt.want1)
-			}
+			result, err := repository.GetAll()
+			assert.Equal(t, testTable.expected1, result)
+			assert.Equal(t, testTable.expected2, err)
 		})
 	}
 }

@@ -25,5 +25,12 @@ func (r repositoryClientImpl) Save(client *domain.Client) *errs.AppErr {
 }
 
 func (r repositoryClientImpl) GetAll() ([]domain.Client, *errs.AppErr) {
-	panic("not implemented") // TODO: Implement
+	// get data client and check there error or not
+	var client []domain.Client
+	if tx := r.db.Find(&client); tx.Error != nil {
+		logger.Error("error get all data client " + tx.Error.Error())
+		return nil, errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!")
+	}
+
+	return client, nil
 }
