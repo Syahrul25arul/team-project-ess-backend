@@ -6,6 +6,7 @@ import (
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
 	"employeeSelfService/response"
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -30,12 +31,20 @@ func (repo RepositoryUserImpl) FindByEmail(email string) (*domain.User, *errs.Ap
 }
 
 func (repo RepositoryUserImpl) FindById(id int64) (*domain.User, *errs.AppErr) {
+
 	// buat variable untuk menanpung data user dari database
 	var user *domain.User = &domain.User{IdUser: id}
+	fmt.Println("SEBELUM MASUK FIRST", user)
 	if result := repo.db.First(user); result.RowsAffected == 0 {
+		fmt.Print("MASUK FIRST", result)
+		logger.Error("error get data user by id not found")
+		return nil, errs.NewNotFoundError("user not found")
+	} else if result.Error != nil {
+		fmt.Print("MASUK ELSE IF", result.Error.Error())
 		logger.Error("error get data user by id not found")
 		return nil, errs.NewNotFoundError("user not found")
 	}
+	fmt.Println("SETELAH FIRST", user)
 	return user, nil
 }
 
