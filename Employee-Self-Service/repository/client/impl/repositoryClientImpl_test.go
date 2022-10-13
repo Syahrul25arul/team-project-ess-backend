@@ -111,3 +111,91 @@ func Test_repositoryClientImpl_GetAll(t *testing.T) {
 		})
 	}
 }
+
+func Test_repositoryClientImpl_GetById(t *testing.T) {
+	SetupTest()
+	db, repository := GetRepository()
+	helper.TruncateTable(db, []string{"client"})
+	database.SetupDataClientDummy(db)
+
+	testCase := []struct {
+		name      string
+		want      interface{}
+		expected1 *domain.Client
+		expected2 *errs.AppErr
+	}{
+		{
+			name: "Get Client By Id Success",
+			want: 1,
+			expected1: &domain.Client{
+				IdClient:     1,
+				NamaClient:   "Indo Maret",
+				Lattitude:    -6.288405,
+				Longitude:    106.812327,
+				AlamatClient: "Jl. Al Maruf No.58, RT.10/RW.3, Cilandak Tim., Kec. Ps. Minggu, KOTA ADM, Daerah Khusus Ibukota Jakarta 12140",
+			},
+			expected2: nil,
+		},
+		{
+			name: "Get Client By Id Success2",
+			want: 2,
+			expected1: &domain.Client{
+				IdClient:     2,
+				NamaClient:   "Blue Bird Group",
+				Lattitude:    -6.255734,
+				Longitude:    106.776826,
+				AlamatClient: "Jl. Mampang Prpt. Raya No.60, RT.9/RW.3, Tegal Parang, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12790",
+			},
+			expected2: nil,
+		},
+		{
+			name:      "Get Client By Id Failed Not Found",
+			want:      20,
+			expected1: nil,
+			expected2: errs.NewNotFoundError("data client not found"),
+		},
+	}
+	for _, testTable := range testCase {
+		t.Run(testTable.name, func(t *testing.T) {
+
+			result, err := repository.GetById(testTable.want.(int))
+			assert.Equal(t, testTable.expected1, result)
+			assert.Equal(t, testTable.expected2, err)
+		})
+	}
+}
+
+func Test_repositoryClientImpl_Delete(t *testing.T) {
+	SetupTest()
+	db, repository := GetRepository()
+	helper.TruncateTable(db, []string{"client"})
+	database.SetupDataClientDummy(db)
+
+	testCase := []struct {
+		name     string
+		want     interface{}
+		expected *errs.AppErr
+	}{
+		{
+			name:     "Delete Client Success",
+			want:     1,
+			expected: nil,
+		},
+		{
+			name:     "Delete Client Success2",
+			want:     2,
+			expected: nil,
+		},
+		{
+			name:     "Delete Client Failed",
+			want:     20,
+			expected: errs.NewNotFoundError("delete failed, client not found"),
+		},
+	}
+	for _, testTable := range testCase {
+		t.Run(testTable.name, func(t *testing.T) {
+			err := repository.Delete(testTable.want.(int))
+			assert.Equal(t, testTable.expected, err)
+		})
+	}
+}
