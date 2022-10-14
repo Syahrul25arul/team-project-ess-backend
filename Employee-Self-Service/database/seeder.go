@@ -206,6 +206,27 @@ func SetupDataEmailValidationDummy(db *gorm.DB) {
 	tx.Commit()
 }
 
+func SetupDataClientDummy(db *gorm.DB) {
+	tx := db.Begin()
+
+	client1 := &domain.Client{
+		NamaClient:   "Indo Maret",
+		Lattitude:    -6.288405,
+		Longitude:    106.812327,
+		AlamatClient: "Jl. Al Maruf No.58, RT.10/RW.3, Cilandak Tim., Kec. Ps. Minggu, KOTA ADM, Daerah Khusus Ibukota Jakarta 12140",
+	}
+	client2 := &domain.Client{
+		NamaClient:   "Blue Bird Group",
+		Lattitude:    -6.255734,
+		Longitude:    106.776826,
+		AlamatClient: "Jl. Mampang Prpt. Raya No.60, RT.9/RW.3, Tegal Parang, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12790",
+	}
+
+	tx.Create(client1)
+	tx.Create(client2)
+	tx.Commit()
+}
+
 func SetupDataUserDummy(db *gorm.DB) {
 	tx := db.Begin()
 	userTest := &domain.User{

@@ -34,6 +34,7 @@ func (handler HandlerEmailValidation) SaveEmailValidation(ctx *gin.Context) {
 	if err != nil {
 		errorResponse := errs.NewUnexpectedError("terjadi kesalahan, pastikan url anda sudah benar")
 		ctx.JSON(errorResponse.Code, errorResponse)
+		return
 	}
 
 	// kirim data emailValidation ke service, dan tankap response dari service
