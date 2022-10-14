@@ -11,6 +11,12 @@ import (
 	"gorm.io/gorm"
 )
 
+type SuccessResponseMessage struct {
+	Code    int
+	Status  string
+	Message string
+}
+
 func BcryptPassword(passwordSalt string) string {
 	newPassword, _ := bcrypt.GenerateFromPassword([]byte(passwordSalt), 8)
 	return string(newPassword)
@@ -45,5 +51,13 @@ func ClearDoubleCode(str string) string {
 func TruncateTable(db *gorm.DB, table []string) {
 	for _, t := range table {
 		db.Exec(fmt.Sprintf("TRUNCATE TABLE %s restart identity cascade", t))
+	}
+}
+
+func NewSuccessResponseMessage(code int, table string, action string) *SuccessResponseMessage {
+	return &SuccessResponseMessage{
+		Code:    code,
+		Status:  "Ok",
+		Message: fmt.Sprintf("Data %s has been %s", table, action),
 	}
 }

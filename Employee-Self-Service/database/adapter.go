@@ -16,7 +16,7 @@ func GetClientDb() *gorm.DB {
 	db_dbname := config.DB_NAME
 	db_port := config.DB_PORT
 
-	fmt.Println("Host", db_host)
+	fmt.Println("Host", db_dbname)
 	// check if app run testing
 	if config.TESTING == "true" {
 		db_dbname = config.DB_NAME_TESTING
@@ -30,6 +30,7 @@ func GetClientDb() *gorm.DB {
 	// if there error connect to db, show error
 	if err != nil {
 		logger.Fatal("error connect to database : " + err.Error())
+		return nil
 	}
 
 	// if connect success give info

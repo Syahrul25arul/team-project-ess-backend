@@ -34,6 +34,7 @@ func (handler HandlerAbsenConfiguration) SaveAbsenConfiguration(ctx *gin.Context
 	if err != nil {
 		errorResponse := errs.NewUnexpectedError("something wrong")
 		ctx.JSON(errorResponse.Code, errorResponse)
+		return
 	}
 
 	// kirim data emailValidation ke service, dan tankap response dari service
