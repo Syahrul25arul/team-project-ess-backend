@@ -8,6 +8,7 @@ import (
 	handlerDashboard "employeeSelfService/handler/dashboard"
 	handlerEmailValidation "employeeSelfService/handler/emailValidation"
 	handlerLogin "employeeSelfService/handler/login"
+	handlerPosition "employeeSelfService/handler/position"
 	handlerRegister "employeeSelfService/handler/register"
 	"employeeSelfService/logger"
 	"employeeSelfService/middleware"
@@ -30,6 +31,7 @@ func Start() {
 	emailValidationHandler := handlerEmailValidation.NewHandlerEmailValidation(dbClient)
 	absenConfigurationHandler := handlerAbsenConfiguration.NewHandlerAbsenConfiguration(dbClient)
 	dashboardHandler := handlerDashboard.NewHandlerDashboard(dbClient)
+	positionHandler := handlerPosition.NewHandlerPosition(dbClient)
 	clientHandler := handlerClient.NewHandlerClient(dbClient)
 
 	// setup server gin
@@ -37,20 +39,35 @@ func Start() {
 
 	r.POST("/register", registerHandler.RegisterHandler)
 	r.POST("/login", loginHandler.LoginHandler)
-
 	r.GET("/dashboard/:user_id", dashboardHandler.GetDashboardHandler)
-	isAdmin := r.Group("/konfigurasi")
+
+	// isAdmin := r.Group("/konfigurasi")
+	isAdmin := r.Group("/")
 
 	// is admin route middleware
 	isAdmin.Use(middleware.IsAdmin(dbClient))
 	{
-		isAdmin.POST("/:user_id/email", emailValidationHandler.SaveEmailValidation)
-		isAdmin.POST("/:user_id/kehadiran", absenConfigurationHandler.SaveAbsenConfiguration)
-		isAdmin.GET("/client/:user_id", clientHandler.GetAllClient)
-		isAdmin.GET("/client/:user_id/:client_id", clientHandler.GetClientById)
-		isAdmin.POST("/client/:user_id", clientHandler.SaveClient)
-		isAdmin.PUT("/client/:user_id", clientHandler.UpdateClient)
-		isAdmin.DELETE("/client/:user_id/:client_id", clientHandler.DeleteClient)
+		konfigurasi := isAdmin.Group("/konfigurasi")
+		konfigurasi.Use()
+		{
+			konfigurasi.POST("/:user_id/email", emailValidationHandler.SaveEmailValidation)
+			konfigurasi.POST("/:user_id/kehadiran", absenConfigurationHandler.SaveAbsenConfiguration)
+			konfigurasi.GET("/client/:user_id", clientHandler.GetAllClient)
+			konfigurasi.GET("/client/:user_id/:client_id", clientHandler.GetClientById)
+			konfigurasi.POST("/client/:user_id", clientHandler.SaveClient)
+			konfigurasi.PUT("/client/:user_id", clientHandler.UpdateClient)
+			konfigurasi.DELETE("/client/:user_id/:client_id", clientHandler.DeleteClient)
+		}
+
+		position := isAdmin.Group("/position")
+		position.Use()
+		{
+			position.POST("/", positionHandler.SavePosition)
+			position.GET("/:id_position", positionHandler.GetPositionById)
+			position.DELETE("/:id_position", positionHandler.DeletePosition)
+			position.PUT("/:id_position", positionHandler.UpdatePosition)
+		}
+
 	}
 
 	// give info where server and port app running
