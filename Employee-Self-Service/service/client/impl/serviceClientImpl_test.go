@@ -231,3 +231,54 @@ func Test_serviceClientImpl_DeleteClient(t *testing.T) {
 		})
 	}
 }
+
+func Test_serviceClientImpl_UpdateClient(t *testing.T) {
+	// setup test
+	SetupTest()
+	db, service := GetService()
+	helper.TruncateTable(db, []string{"client"})
+	database.SetupDataClientDummy(db)
+
+	testCase := []struct {
+		name      string
+		want1     *domain.Client
+		expected  *errs.AppErr
+		expected2 *helper.SuccessResponseMessage
+	}{
+		{
+			name: "Update Client Success",
+			want1: &domain.Client{
+				IdClient:     2,
+				NamaClient:   "Blue Bird Group Test",
+				Lattitude:    -6.255734,
+				Longitude:    106.776826,
+				AlamatClient: "Jl. Mampang Prpt. Raya No.60, RT.9/RW.3, Tegal Parang, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12790",
+			},
+			expected2: &helper.SuccessResponseMessage{
+				Code:    http.StatusCreated,
+				Status:  "Ok",
+				Message: "Data client has been updated",
+			},
+			expected: nil,
+		},
+		{
+			name: "Update Client Not Found",
+			want1: &domain.Client{
+				IdClient:     5,
+				NamaClient:   "Blue Bird Group Test",
+				Lattitude:    -6.255734,
+				Longitude:    106.776826,
+				AlamatClient: "Jl. Mampang Prpt. Raya No.60, RT.9/RW.3, Tegal Parang, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12790",
+			},
+			expected2: nil,
+			expected:  errs.NewNotFoundError("data client not found"),
+		},
+	}
+	for _, testTable := range testCase {
+		t.Run(testTable.name, func(t *testing.T) {
+			result, err := service.Update(testTable.want1)
+			assert.Equal(t, testTable.expected, err)
+			assert.Equal(t, testTable.expected2, result)
+		})
+	}
+}

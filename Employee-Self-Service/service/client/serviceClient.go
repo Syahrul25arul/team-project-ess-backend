@@ -12,4 +12,5 @@ type ServiceClient interface {
 	GetAllClient() (*response.ResponseClient, *errs.AppErr)
 	GetClientById(id int) (*response.ResponseClient, *errs.AppErr)
 	DeleteClient(id int) (*helper.SuccessResponseMessage, *errs.AppErr)
+	Update(client *domain.Client) (*helper.SuccessResponseMessage, *errs.AppErr)
 }

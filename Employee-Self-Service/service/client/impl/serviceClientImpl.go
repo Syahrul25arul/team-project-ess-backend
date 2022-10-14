@@ -60,3 +60,15 @@ func (s serviceClientImpl) DeleteClient(id int) (*helper.SuccessResponseMessage,
 		return response, nil
 	}
 }
+func (s serviceClientImpl) Update(client *domain.Client) (*helper.SuccessResponseMessage, *errs.AppErr) {
+	if _, err := s.repo.GetById(int(client.IdClient)); err != nil {
+		return nil, err
+	} else {
+
+		if err := s.repo.Save(client); err != nil {
+			return nil, err
+		} else {
+			return helper.NewSuccessResponseMessage(http.StatusCreated, "client", "updated"), nil
+		}
+	}
+}
