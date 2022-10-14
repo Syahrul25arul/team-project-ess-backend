@@ -7,8 +7,10 @@ import (
 	handlerDashboard "employeeSelfService/handler/dashboard"
 	handlerEmailValidation "employeeSelfService/handler/emailValidation"
 	handlerLogin "employeeSelfService/handler/login"
+	handlerPosition "employeeSelfService/handler/position"
 	handlerRegister "employeeSelfService/handler/register"
 	"employeeSelfService/logger"
+	"employeeSelfService/middleware"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +30,7 @@ func Start() {
 	emailValidationHandler := handlerEmailValidation.NewHandlerEmailValidation(dbClient)
 	absenConfigurationHandler := handlerAbsenConfiguration.NewHandlerAbsenConfiguration(dbClient)
 	dashboardHandler := handlerDashboard.NewHandlerDashboard(dbClient)
+	positionHandler := handlerPosition.NewHandlerPosition(dbClient)
 
 	// customerRepository := repostiory.NewCustomerRepository(dbClient)
 	// customerService := service.NewCustomerService(customerRepository)
@@ -55,9 +58,32 @@ func Start() {
 	// // productRoute.Use(middleware.AuthMiddleware)
 	r.POST("/register", registerHandler.RegisterHandler)
 	r.POST("/login", loginHandler.LoginHandler)
-	r.POST("/konfigurasi/:user_id/email", emailValidationHandler.SaveEmailValidation)
-	r.POST("/konfigurasi/:user_id/kehadiran", absenConfigurationHandler.SaveAbsenConfiguration)
 	r.GET("/dashboard/:user_id", dashboardHandler.GetDashboardHandler)
+
+	// isAdmin := r.Group("/konfigurasi")
+	isAdmin := r.Group("/")
+
+	// is admin route middleware
+	isAdmin.Use(middleware.IsAdmin(dbClient))
+	{
+		konfigurasi := isAdmin.Group("/konfigurasi")
+		konfigurasi.Use()
+		{
+			konfigurasi.POST("/:user_id/email", emailValidationHandler.SaveEmailValidation)
+			konfigurasi.POST("/:user_id/kehadiran", absenConfigurationHandler.SaveAbsenConfiguration)
+		}
+
+		position := isAdmin.Group("/position")
+		position.Use()
+		{
+			position.POST("/", positionHandler.SavePosition)
+			position.GET("/:id_position", positionHandler.GetPositionById)
+			position.DELETE("/:id_position", positionHandler.DeletePosition)
+			position.PUT("/:id_position", positionHandler.UpdatePosition)
+		}
+
+	}
+
 	// r.POST("/login", authHandler.LoginHandler)
 
 	// r.POST("/products", middleware.IsAdminMiddleware(), productHandler.SaveProductHandler)
