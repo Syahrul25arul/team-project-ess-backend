@@ -5,7 +5,6 @@ import (
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
 	"errors"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -72,10 +71,19 @@ func (r repositoryClientImpl) Delete(id int) *errs.AppErr {
 	} else if tx.Error != nil {
 
 		// create logger error unexpected for debugging and return
-		fmt.Println("========== ERROR UNEXPECTED ============", id)
 		logger.Error("error delete client unexpected " + tx.Error.Error())
 		return errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!")
 	}
 
 	return nil
+}
+
+func (r repositoryClientImpl) GetAllWithProject() ([]domain.ClientWithProject, *errs.AppErr) {
+	// get data client and check there error or not
+	var clients []domain.ClientWithProject
+	if tx := r.db.Preload("Projects").Find(&clients); tx.Error != nil {
+		logger.Error("error get all data client " + tx.Error.Error())
+		return nil, errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!")
+	}
+	return clients, nil
 }

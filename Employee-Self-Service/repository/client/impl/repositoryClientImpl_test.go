@@ -7,6 +7,7 @@ import (
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
 	repositoryClient "employeeSelfService/repository/client"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -196,6 +197,80 @@ func Test_repositoryClientImpl_Delete(t *testing.T) {
 		t.Run(testTable.name, func(t *testing.T) {
 			err := repository.Delete(testTable.want.(int))
 			assert.Equal(t, testTable.expected, err)
+		})
+	}
+}
+
+func Test_repositoryClientImpl_GetAllClientWithProjet(t *testing.T) {
+	SetupTest()
+	db, repository := GetRepository()
+	helper.TruncateTable(db, []string{"client", "project"})
+	database.SetupDataProjectDummy(db)
+
+	testCase := []struct {
+		name      string
+		expected1 []domain.ClientWithProject
+		expected2 *errs.AppErr
+	}{
+		{
+			name: "Get All Client With Project Success",
+			expected1: []domain.ClientWithProject{
+				{
+					IdClient:     1,
+					NamaClient:   "Indo Maret",
+					Lattitude:    -6.288405,
+					Longitude:    106.812327,
+					AlamatClient: "Jl. Al Maruf No.58, RT.10/RW.3, Cilandak Tim., Kec. Ps. Minggu, KOTA ADM, Daerah Khusus Ibukota Jakarta 12140",
+					Projects: []domain.Project{
+						{
+							IdProject:   1,
+							IdClient:    1,
+							ProjectName: "Indo Maret #1",
+						},
+						{
+							IdProject:   2,
+							IdClient:    1,
+							ProjectName: "Indo Maret #2",
+						},
+					},
+				},
+				{
+					IdClient:     2,
+					NamaClient:   "Blue Bird Group",
+					Lattitude:    -6.255734,
+					Longitude:    106.776826,
+					AlamatClient: "Jl. Mampang Prpt. Raya No.60, RT.9/RW.3, Tegal Parang, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12790",
+					Projects: []domain.Project{
+						{
+							IdProject:   3,
+							IdClient:    2,
+							ProjectName: "Blue Bird Group #1",
+						},
+						{
+							IdProject:   4,
+							IdClient:    2,
+							ProjectName: "Blue Bird Group #2",
+						},
+					},
+				},
+			},
+			expected2: nil,
+		},
+		{
+			name:      "Get All Client Failed",
+			expected1: []domain.ClientWithProject{},
+			expected2: nil,
+		},
+	}
+	for i, testTable := range testCase {
+		t.Run(testTable.name, func(t *testing.T) {
+			if i == 1 {
+				helper.TruncateTable(db, []string{"client", "project"})
+			}
+			result, err := repository.GetAllWithProject()
+			fmt.Println(result)
+			assert.Equal(t, testTable.expected1, result)
+			assert.Equal(t, testTable.expected2, err)
 		})
 	}
 }

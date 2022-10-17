@@ -10,4 +10,5 @@ type RepositoryClient interface {
 	GetAll() ([]domain.Client, *errs.AppErr)
 	GetById(id int) (*domain.Client, *errs.AppErr)
 	Delete(id int) *errs.AppErr
+	GetAllWithProject() ([]domain.ClientWithProject, *errs.AppErr)
 }

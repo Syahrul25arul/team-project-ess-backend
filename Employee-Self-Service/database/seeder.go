@@ -5,6 +5,7 @@ import (
 	"employeeSelfService/config"
 	"employeeSelfService/domain"
 	"employeeSelfService/helper"
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -259,4 +260,52 @@ func SetupDataAbsenConfiguration(db *gorm.DB) {
 	}
 
 	db.Create(absenConfiguration)
+}
+
+func SetupDataProjectDummy(db *gorm.DB) {
+	tx := db.Begin()
+
+	client1 := &domain.Client{
+		NamaClient:   "Indo Maret",
+		Lattitude:    -6.288405,
+		Longitude:    106.812327,
+		AlamatClient: "Jl. Al Maruf No.58, RT.10/RW.3, Cilandak Tim., Kec. Ps. Minggu, KOTA ADM, Daerah Khusus Ibukota Jakarta 12140",
+	}
+	client2 := &domain.Client{
+		NamaClient:   "Blue Bird Group",
+		Lattitude:    -6.255734,
+		Longitude:    106.776826,
+		AlamatClient: "Jl. Mampang Prpt. Raya No.60, RT.9/RW.3, Tegal Parang, Kec. Mampang Prpt., Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12790",
+	}
+
+	tx.Save(client1)
+	tx.Save(client2)
+
+	fmt.Println("============ ID CLIENT ==============")
+	fmt.Println(client1.IdClient)
+	fmt.Println(client2.IdClient)
+	project1 := &domain.Project{
+		ProjectName: "Indo Maret #1",
+		IdClient:    client1.IdClient,
+	}
+
+	project2 := &domain.Project{
+		ProjectName: "Indo Maret #2",
+		IdClient:    client1.IdClient,
+	}
+
+	project3 := &domain.Project{
+		ProjectName: "Blue Bird Group #1",
+		IdClient:    client2.IdClient,
+	}
+
+	project4 := &domain.Project{
+		ProjectName: "Blue Bird Group #2",
+		IdClient:    client2.IdClient,
+	}
+	tx.Create(project1)
+	tx.Create(project2)
+	tx.Create(project3)
+	tx.Create(project4)
+	tx.Commit()
 }
