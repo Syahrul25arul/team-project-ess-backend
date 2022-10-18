@@ -70,22 +70,20 @@ func TestHandlerEmailValidation_SaveEmailValidation(t *testing.T) {
 			expectedCode:    400,
 		},
 		{
-			name:            "register handler save data Email Validation Failed forbidden",
+			name:            "register handler save data Email Validation Failed unexpected",
 			requestBody:     &domain.EmailValidation{NamaEmailValidation: "@tai.co.id"},
 			requestUrl:      "/konfigurasi/2/email",
-			expectedMessage: "{code:403,message:you dont have credential,status:error}",
-			expectedCode:    403,
-		},
-		{
-			name:            "register handler save data Email Validation Failed user not foyund",
-			requestBody:     &domain.EmailValidation{NamaEmailValidation: "@tai.co.id"},
-			requestUrl:      "/konfigurasi/5/email",
-			expectedMessage: "{code:404,message:user not found,status:error}",
-			expectedCode:    404,
+			expectedMessage: "{code:500,message:Sorry, an error has occurred on our system due to an internal server error. please try again!,status:error}",
+			expectedCode:    500,
 		},
 	}
-	for _, testTable := range tests {
+	for i, testTable := range tests {
 		t.Run(testTable.name, func(t *testing.T) {
+			if i == 2 {
+				sql, _ := db.DB()
+				sql.Close()
+			}
+
 			// set data request to bytes and put to NewRequest
 			jsonValue, _ := json.Marshal(testTable.requestBody)
 			req, _ := http.NewRequest("POST", testTable.requestUrl, bytes.NewBuffer(jsonValue))

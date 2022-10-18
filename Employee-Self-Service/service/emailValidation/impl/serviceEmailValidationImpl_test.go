@@ -69,17 +69,15 @@ func TestServiceEmaiValidationImpl_Save(t *testing.T) {
 			name:     "Email Validation Failed forbidden",
 			want1:    &domain.EmailValidation{NamaEmailValidation: "@tai.co.id"},
 			want2:    2,
-			expected: response.NewResponseEmailValidationFailed(http.StatusForbidden, "you dont have credential"),
-		},
-		{
-			name:     "Email Validation Failed user not foyund",
-			want1:    &domain.EmailValidation{NamaEmailValidation: "@tai.co.id"},
-			want2:    5,
-			expected: response.NewResponseEmailValidationFailed(http.StatusNotFound, "user not found"),
+			expected: response.NewResponseEmailValidationFailed(http.StatusInternalServerError, "Sorry, an error has occurred on our system due to an internal server error. please try again!"),
 		},
 	}
-	for _, testTable := range testCase {
+	for i, testTable := range testCase {
 		t.Run(testTable.name, func(t *testing.T) {
+			if i == 2 {
+				sql, _ := db.DB()
+				sql.Close()
+			}
 			result := service.Save(testTable.want1, int64(testTable.want2))
 			assert.Equal(t, testTable.expected, result)
 		})

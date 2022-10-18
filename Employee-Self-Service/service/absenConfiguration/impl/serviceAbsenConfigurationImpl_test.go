@@ -53,7 +53,27 @@ func TestServiceAbsenConfigurationImpl_Save(t *testing.T) {
 		expected response.ResponseAbsenConfiguration
 	}{
 		{
-			name: "Email Validation Success",
+			name:     "Absen Configuration Failed insert",
+			want1:    &request.AbsensiConfiguration{},
+			want2:    1,
+			expected: response.NewResponseAbsenConfigurationFailed(http.StatusInternalServerError, "Sorry, an error has occurred on our system due to an internal server error. please try again!"),
+		},
+		{
+			name: "Absen Configuration Failed unexpected get data",
+			want1: &request.AbsensiConfiguration{
+				DurasiJamKerja:             8,
+				IntervalKeterlambatan:      15,
+				BobotKeterlambatan:         0.25,
+				MaksimalBobotKeterlambatan: 1,
+				IdPosition:                 1,
+				MinimalMasukJamKerja:       "08:00",
+				MaksimalMasukJamKerja:      "10:00",
+			},
+			want2:    2,
+			expected: response.NewResponseAbsenConfigurationFailed(http.StatusInternalServerError, "Sorry, an error has occurred on our system due to an internal server error. please try again!"),
+		},
+		{
+			name: "Absen Configuration Success insert",
 			want1: &request.AbsensiConfiguration{
 				DurasiJamKerja:             8,
 				IntervalKeterlambatan:      15,
@@ -68,21 +88,13 @@ func TestServiceAbsenConfigurationImpl_Save(t *testing.T) {
 		},
 
 		{
-			name: "Email Validation Failed forbidden",
-			want1: &request.AbsensiConfiguration{
-				DurasiJamKerja:             8,
-				IntervalKeterlambatan:      15,
-				BobotKeterlambatan:         0.25,
-				MaksimalBobotKeterlambatan: 1,
-				IdPosition:                 1,
-				MinimalMasukJamKerja:       "08:00",
-				MaksimalMasukJamKerja:      "10:00",
-			},
-			want2:    2,
-			expected: response.NewResponseAbsenConfigurationFailed(http.StatusForbidden, "you dont have credential"),
+			name:     "Absen Configuration Update Failed",
+			want1:    &request.AbsensiConfiguration{},
+			want2:    1,
+			expected: response.NewResponseAbsenConfigurationFailed(http.StatusInternalServerError, "Sorry, an error has occurred on our system due to an internal server error. please try again!"),
 		},
 		{
-			name: "Email Validation Failed user not foyund",
+			name: "Absen Configuration Update Success",
 			want1: &request.AbsensiConfiguration{
 				DurasiJamKerja:             8,
 				IntervalKeterlambatan:      15,
@@ -92,12 +104,22 @@ func TestServiceAbsenConfigurationImpl_Save(t *testing.T) {
 				MinimalMasukJamKerja:       "08:00",
 				MaksimalMasukJamKerja:      "10:00",
 			},
-			want2:    5,
-			expected: response.NewResponseAbsenConfigurationFailed(http.StatusNotFound, "user not found"),
+			want2:    1,
+			expected: response.NewResponseAbsenConfiguration(),
 		},
 	}
-	for _, testTable := range testCase {
+	for i, testTable := range testCase {
 		t.Run(testTable.name, func(t *testing.T) {
+			if i == 1 {
+				sql, _ := db.DB()
+				sql.Close()
+			}
+			if i == 2 {
+				db = database.GetClientDb()
+				repositiory := repositoryAbsenConfiguration.NewRepositoryAbsenConfigurationImpl(db)
+				repositioryUser := repositoryUser.NewRepositoryUserImpl(db)
+				service = NewServiceEmailValidationImpl(repositiory, repositioryUser)
+			}
 			result := service.Save(testTable.want1, int64(testTable.want2))
 			assert.Equal(t, testTable.expected, result)
 		})

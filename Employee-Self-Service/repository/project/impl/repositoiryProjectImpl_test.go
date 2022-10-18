@@ -7,7 +7,6 @@ import (
 	"employeeSelfService/errs"
 	"employeeSelfService/helper"
 	repositoryProject "employeeSelfService/repository/project"
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -39,6 +38,7 @@ func Test_repositoryProjectImpl_SaveProject(t *testing.T) {
 	SetupTest()
 	db, repository := GetRepository()
 	helper.TruncateTable(db, []string{"project"})
+	database.SetupDataClientDummy(db)
 
 	testCase := []struct {
 		name     string
@@ -52,6 +52,11 @@ func Test_repositoryProjectImpl_SaveProject(t *testing.T) {
 				IdClient:    2,
 			},
 			expected: nil,
+		},
+		{
+			name:     "Save Project Failed",
+			want:     &domain.Project{},
+			expected: errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!"),
 		},
 	}
 	for _, testTable := range testCase {
@@ -128,18 +133,29 @@ func Test_repositoryProjectImpl_GetAllProject(t *testing.T) {
 			expected2: nil,
 		},
 		{
-			name:      "Get All Client Failed",
+			name:      "Get All Project Data null",
 			expected1: []domain.ProjectWithClient(nil),
 			expected2: nil,
+		},
+		{
+			name:      "Get All Project Failed",
+			expected1: nil,
+			expected2: errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!"),
 		},
 	}
 	for i, testTable := range testCase {
 		t.Run(testTable.name, func(t *testing.T) {
 			if i == 1 {
-				helper.TruncateTable(db, []string{"client"})
+				helper.TruncateTable(db, []string{"client", "project"})
+			}
+			if i == 2 {
+				sql, _ := db.DB()
+				sql.Close()
+				result, err := repository.GetAllProject()
+				assert.Equal(t, testTable.expected1, result)
+				assert.Equal(t, testTable.expected2, err)
 			}
 			result, err := repository.GetAllProject()
-			fmt.Println(result)
 			assert.Equal(t, testTable.expected1, result)
 			assert.Equal(t, testTable.expected2, err)
 		})
@@ -196,12 +212,21 @@ func Test_repositoryProjectImpl_GetById(t *testing.T) {
 			name:      "Get Client By Id Failed Not Found",
 			want:      20,
 			expected1: nil,
-			expected2: errs.NewNotFoundError("data client not found"),
+			expected2: errs.NewNotFoundError("data project not found"),
+		},
+		{
+			name:      "Get Client By Id Failed Unexpected Error",
+			want:      20,
+			expected1: nil,
+			expected2: errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!"),
 		},
 	}
-	for _, testTable := range testCase {
+	for i, testTable := range testCase {
 		t.Run(testTable.name, func(t *testing.T) {
-
+			if i == 3 {
+				sql, _ := db.DB()
+				sql.Close()
+			}
 			result, err := repository.GetById(testTable.want)
 			assert.Equal(t, testTable.expected1, result)
 			assert.Equal(t, testTable.expected2, err)
@@ -231,13 +256,22 @@ func Test_repositoryProjectImpl_Delete(t *testing.T) {
 			expected: nil,
 		},
 		{
-			name:     "Delete Project Failed",
+			name:     "Delete Project Failed not found",
 			want:     20,
 			expected: errs.NewNotFoundError("delete failed, project not found"),
 		},
+		{
+			name:     "Delete Project Failed unexpected",
+			want:     3,
+			expected: errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!"),
+		},
 	}
-	for _, testTable := range testCase {
+	for i, testTable := range testCase {
 		t.Run(testTable.name, func(t *testing.T) {
+			if i == 3 {
+				sql, _ := db.DB()
+				sql.Close()
+			}
 			err := repository.Delete(testTable.want)
 			assert.Equal(t, testTable.expected, err)
 		})

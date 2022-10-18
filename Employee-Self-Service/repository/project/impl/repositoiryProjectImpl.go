@@ -4,7 +4,6 @@ import (
 	"employeeSelfService/domain"
 	"employeeSelfService/errs"
 	"employeeSelfService/logger"
-	"errors"
 
 	"gorm.io/gorm"
 )
@@ -75,28 +74,16 @@ func (r repositoryProjectImpl) GetAllProject() ([]domain.ProjectWithClient, *err
 
 func (r repositoryProjectImpl) GetById(id int32) (*domain.ProjectWithClient, *errs.AppErr) {
 	// create variable for domain project
-	var project *domain.ProjectWithClient
+	var project *domain.ProjectWithClient = &domain.ProjectWithClient{}
 
 	// get data project by id and check there error or not
 	if rows, err := r.db.Table("project").Joins("inner join client on project.id_client = client.id_client ").Where("project.id_project = ?", id).Rows(); err != nil {
 
-		// check if data project by id not found
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		// create logger error for debugging
+		logger.Error("error get data project by id : " + err.Error())
+		return nil, errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!")
 
-			// create logger error for debugging
-			logger.Error("error get data project by id : " + err.Error())
-			return nil, errs.NewNotFoundError("data project not found")
-		} else {
-
-			// this block for handle error unexpected
-			// create logger error for debugging
-			logger.Error("error get data project by id : " + err.Error())
-			return nil, errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!")
-		}
 	} else {
-		// close rows at the end execution program
-		defer rows.Close()
-
 		// loop rows project from database
 		for rows.Next() {
 			// create variable domain project and client
@@ -124,7 +111,15 @@ func (r repositoryProjectImpl) GetById(id int32) (*domain.ProjectWithClient, *er
 			project.Client = *client
 
 		}
-		return project, nil
+
+		// check if data project by id not found
+		// this block for handle error unexpected
+		if project.IdProject == int32(0) {
+			logger.Error("error get data project by id not found")
+			return nil, errs.NewNotFoundError("data project not found")
+		} else {
+			return project, nil
+		}
 	}
 }
 
@@ -133,16 +128,16 @@ func (r repositoryProjectImpl) Delete(id int32) *errs.AppErr {
 	var project *domain.Project = &domain.Project{IdProject: int32(id)}
 
 	// delete project from database where id from request project browser
-	if tx := r.db.Delete(project); tx.RowsAffected < int64(1) {
-
-		// create looger error for debuggin delete failed because data project by id nof found
-		logger.Error("error delete project, id not found ")
-		return errs.NewNotFoundError("delete failed, project not found")
-	} else if tx.Error != nil {
+	if tx := r.db.Delete(project); tx.Error != nil {
 
 		// create logger error unexpected for debugging and return
 		logger.Error("error delete project unexpected " + tx.Error.Error())
 		return errs.NewUnexpectedError("Sorry, an error has occurred on our system due to an internal server error. please try again!")
+	} else if tx.RowsAffected < int64(1) {
+
+		// create looger error for debuggin delete failed because data project by id nof found
+		logger.Error("error delete project, id not found ")
+		return errs.NewNotFoundError("delete failed, project not found")
 	}
 
 	return nil

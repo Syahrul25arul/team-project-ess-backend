@@ -24,12 +24,12 @@ func SetupTest() {
 	config.SanityCheck()
 }
 
-func getHandler() (*gorm.DB, HandlerAbsenConfiguration) {
+func getHandler() (*gorm.DB, *HandlerAbsenConfiguration) {
 	db := database.GetClientDb()
 	repoAbsenConfiguration := repoAbsenConfiguration.NewRepositoryAbsenConfigurationImpl(db)
 	repositoryUser := repoUser.NewRepositoryUserImpl(db)
 	service := serviceAbsenConfigurationImpl.NewServiceEmailValidationImpl(repoAbsenConfiguration, repositoryUser)
-	return db, HandlerAbsenConfiguration{service: service}
+	return db, &HandlerAbsenConfiguration{service: service}
 }
 
 func TestHandlerAbsenConfiguration_SaveAbsenConfiguration(t *testing.T) {
@@ -39,6 +39,7 @@ func TestHandlerAbsenConfiguration_SaveAbsenConfiguration(t *testing.T) {
 
 	// setup handler and data dummy
 	db, handler := getHandler()
+
 	helper.TruncateTable(db, []string{"absen_configuration", "users"})
 	database.SetupDataUserDummy(db)
 
@@ -53,7 +54,14 @@ func TestHandlerAbsenConfiguration_SaveAbsenConfiguration(t *testing.T) {
 		expectedCode    int
 	}{
 		{
-			name: "Email Validation Success",
+			name:            "Absen Configuration Failed insert",
+			requestBody:     &request.AbsensiConfiguration{},
+			requestUrl:      "/konfigurasi/1/kehadiran",
+			expectedMessage: "{code:500,message:Sorry, an error has occurred on our system due to an internal server error. please try again!,status:error}",
+			expectedCode:    http.StatusInternalServerError,
+		},
+		{
+			name: "Absen Configuration Success insert",
 			requestBody: &request.AbsensiConfiguration{
 				DurasiJamKerja:             8,
 				IntervalKeterlambatan:      15,
@@ -67,9 +75,30 @@ func TestHandlerAbsenConfiguration_SaveAbsenConfiguration(t *testing.T) {
 			expectedMessage: "{code:201,message:Absen configuration has been created,status:ok}",
 			expectedCode:    http.StatusCreated,
 		},
-
 		{
-			name: "Email Validation Failed forbidden",
+			name:            "Absen Configuration Update Failed",
+			requestBody:     &request.AbsensiConfiguration{},
+			requestUrl:      "/konfigurasi/1/kehadiran",
+			expectedMessage: "{code:500,message:Sorry, an error has occurred on our system due to an internal server error. please try again!,status:error}",
+			expectedCode:    http.StatusInternalServerError,
+		},
+		{
+			name: "Absen Configuration Update Success",
+			requestBody: &request.AbsensiConfiguration{
+				DurasiJamKerja:             8,
+				IntervalKeterlambatan:      15,
+				BobotKeterlambatan:         0.25,
+				MaksimalBobotKeterlambatan: 1,
+				IdPosition:                 1,
+				MinimalMasukJamKerja:       "08:00",
+				MaksimalMasukJamKerja:      "10:00",
+			},
+			requestUrl:      "/konfigurasi/1/kehadiran",
+			expectedMessage: "{code:201,message:Absen configuration has been created,status:ok}",
+			expectedCode:    http.StatusCreated,
+		},
+		{
+			name: "Absen Configuration Failed unexpected get data",
 			requestBody: &request.AbsensiConfiguration{
 				DurasiJamKerja:             8,
 				IntervalKeterlambatan:      15,
@@ -80,27 +109,17 @@ func TestHandlerAbsenConfiguration_SaveAbsenConfiguration(t *testing.T) {
 				MaksimalMasukJamKerja:      "10:00",
 			},
 			requestUrl:      "/konfigurasi/2/kehadiran",
-			expectedMessage: "{code:403,message:you dont have credential,status:error}",
-			expectedCode:    http.StatusForbidden,
-		},
-		{
-			name: "Email Validation Failed user not foyund",
-			requestBody: &request.AbsensiConfiguration{
-				DurasiJamKerja:             8,
-				IntervalKeterlambatan:      15,
-				BobotKeterlambatan:         0.25,
-				MaksimalBobotKeterlambatan: 1,
-				IdPosition:                 1,
-				MinimalMasukJamKerja:       "08:00",
-				MaksimalMasukJamKerja:      "10:00",
-			},
-			requestUrl:      "/konfigurasi/5/kehadiran",
-			expectedMessage: "{code:404,message:user not found,status:error}",
-			expectedCode:    http.StatusNotFound,
+			expectedMessage: "{code:500,message:Sorry, an error has occurred on our system due to an internal server error. please try again!,status:error}",
+			expectedCode:    http.StatusInternalServerError,
 		},
 	}
-	for _, testTable := range testCase {
+	for i, testTable := range testCase {
+
 		t.Run(testTable.name, func(t *testing.T) {
+			if i == 4 {
+				sql, _ := db.DB()
+				sql.Close()
+			}
 			// set data request to bytes and put to NewRequest
 			jsonValue, _ := json.Marshal(testTable.requestBody)
 			req, _ := http.NewRequest("POST", testTable.requestUrl, bytes.NewBuffer(jsonValue))
