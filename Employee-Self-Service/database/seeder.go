@@ -11,6 +11,15 @@ import (
 	"gorm.io/gorm"
 )
 
+func SetupDataDummyTest(db *gorm.DB) {
+	SetupDataDummy(db)
+	SetupDataEmailValidationDummy(db)
+	SetupDataClientDummy(db)
+	SetupDataUserDummy(db)
+	SetupDataAbsenConfiguration(db)
+	SetupDataProjectDummy(db)
+}
+
 func SetupDataDummy(db *gorm.DB) {
 	tx := db.Begin()
 

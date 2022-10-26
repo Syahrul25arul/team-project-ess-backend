@@ -1,9 +1,9 @@
 package domain
 
 type Project struct {
-	IdProject   int32  `gorm:"PrimaryKey"`
-	IdClient    int32  `db:"id_client"`
-	ProjectName string `db:"project_name"`
+	IdProject   int32  `gorm:"PrimaryKey" json:"id_project"`
+	IdClient    int32  `db:"id_client" json:"id_client"`
+	ProjectName string `db:"project_name" json:"project_name"`
 }
 type ProjectWithClient struct {
 	IdProject   int32  `gorm:"PrimaryKey"`

@@ -54,6 +54,24 @@ func TruncateTable(db *gorm.DB, table []string) {
 	}
 }
 
+func TruncateAllTable(db *gorm.DB) {
+	table := []string{
+		"users",
+		"client",
+		"absen_configuration",
+		"approval",
+		"client",
+		"employee",
+		"employe_position",
+		"konfigurasi_email",
+		"position",
+		"project",
+	}
+	for _, t := range table {
+		db.Exec(fmt.Sprintf("TRUNCATE TABLE %s restart identity cascade", t))
+	}
+}
+
 func NewSuccessResponseMessage(code int, table string, action string) *SuccessResponseMessage {
 	return &SuccessResponseMessage{
 		Code:    code,
